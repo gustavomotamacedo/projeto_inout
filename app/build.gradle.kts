@@ -37,6 +37,9 @@ dependencies {
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+    implementation(libs.zxing.android.embedded) // ZXing
+    implementation(libs.sqlite) // SQLite
+    implementation(libs.opencsv) // OpenCSV
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
