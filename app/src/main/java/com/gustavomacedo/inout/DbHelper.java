@@ -1,10 +1,15 @@
 package com.gustavomacedo.inout;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+
+import java.sql.Time;
+import java.util.Date;
 
 public class DbHelper extends SQLiteOpenHelper {
 
@@ -14,7 +19,6 @@ public class DbHelper extends SQLiteOpenHelper {
 
     private static final String TABLE_NAME = "alunos";
 
-    private static final String COLUMN_ID = "_id";
     private static final String COLUMN_NOME = "nome";
     private static final String COLUMN_RGM = "rgm";
     private static final String COLUMN_CODIGO = "codigo";
@@ -31,10 +35,9 @@ public class DbHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String query = "CREATE TABLE "+ TABLE_NAME +" (" +
-                COLUMN_ID +" INTEGER PRIMARY KEY AUTOINCREMENT," +
                 COLUMN_NOME +" VARCHAR(255) NOT NULL," +
-                COLUMN_RGM +" INTEGER NOT NULL," +
-                COLUMN_CODIGO +" INTEGER NOT NULL," +
+                COLUMN_RGM +" INT NOT NULL," +
+                COLUMN_CODIGO +" INT NOT NULL," +
                 COLUMN_DATA +" DATE DEFAULT NULL," +
                 COLUMN_HORA_ENTRADA +" TIME DEFAULT NULL," +
                 COLUMN_HORA_SAIDA +" TIME DEFAULT NULL," +
@@ -49,6 +52,24 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     // TODO : Função para adicionar
+    void adcAluno(String nome, int rgm, int codigo, Date data, Time horaE, Time horaS, Time perm){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_NOME, nome);
+        cv.put(COLUMN_NOME, rgm);
+        cv.put(COLUMN_NOME, codigo);
+        cv.put(COLUMN_NOME, data.getDate());
+        cv.put(COLUMN_NOME, horaE.getTime());
+        cv.put(COLUMN_NOME, horaS.getTime());
+        cv.put(COLUMN_NOME, perm.getTime());
+        long resultado = db.insert(TABLE_NAME, null, cv);
+
+        if (resultado == -1){
+            Toast.makeText(context, "Falhou", Toast.LENGTH_SHORT).show();
+        }else{
+            Toast.makeText(context, "Adicionado com sucesso", Toast.LENGTH_SHORT).show();
+        }
+    }
     // TODO : Função para retornar todos os dados
     // TODO : Função para retornar dados por nome
     // TODO : Função para retornar dados por rgm
