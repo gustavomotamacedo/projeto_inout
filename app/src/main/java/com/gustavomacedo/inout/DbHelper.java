@@ -14,6 +14,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
     private static final String TABLE_NAME = "alunos";
 
+    private static final String COLUMN_ID = "_id";
     private static final String COLUMN_NOME = "nome";
     private static final String COLUMN_RGM = "rgm";
     private static final String COLUMN_CODIGO = "codigo";
@@ -30,9 +31,10 @@ public class DbHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String query = "CREATE TABLE "+ TABLE_NAME +" (" +
+                COLUMN_ID +" INTEGER PRIMARY KEY AUTOINCREMENT," +
                 COLUMN_NOME +" VARCHAR(255) NOT NULL," +
-                COLUMN_RGM +" INT NOT NULL," +
-                COLUMN_CODIGO +" INT NOT NULL," +
+                COLUMN_RGM +" INTEGER NOT NULL," +
+                COLUMN_CODIGO +" INTEGER NOT NULL," +
                 COLUMN_DATA +" DATE DEFAULT NULL," +
                 COLUMN_HORA_ENTRADA +" TIME DEFAULT NULL," +
                 COLUMN_HORA_SAIDA +" TIME DEFAULT NULL," +
