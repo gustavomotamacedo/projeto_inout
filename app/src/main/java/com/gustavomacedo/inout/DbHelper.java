@@ -61,9 +61,9 @@ public class DbHelper extends SQLiteOpenHelper {
         cv.put(COLUMN_RGM, rgm);
         cv.put(COLUMN_CODIGO, codigo);
         cv.put(COLUMN_DATA, data == null ? String.valueOf(DateFormat.format("yyyy-MM-dd", new Date())) : String.valueOf(DateFormat.format("yyyy-MM-dd", data)));
-        cv.put(COLUMN_HORA_ENTRADA, String.valueOf(DateFormat.format("hh:mm:ss", horaE)));
-        cv.put(COLUMN_HORA_SAIDA, String.valueOf(DateFormat.format("hh:mm:ss", horaS)));
-        cv.put(COLUMN_TEMPO_PERMANENCIA, String.valueOf(DateFormat.format("hh:mm:ss", perm)));
+        cv.put(COLUMN_HORA_ENTRADA, horaE == null ? null : String.valueOf(DateFormat.format("hh:mm:ss", horaE)));
+        cv.put(COLUMN_HORA_SAIDA, horaS == null ? null :  String.valueOf(DateFormat.format("hh:mm:ss", horaS)));
+        cv.put(COLUMN_TEMPO_PERMANENCIA, perm == null ? null : String.valueOf(DateFormat.format("hh:mm:ss", perm)));
         long resultado = db.insert(TABLE_NAME, null, cv);
 
         if (resultado == -1){

@@ -1,10 +1,13 @@
 package com.gustavomacedo.inout;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +17,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Objects;
 
 
 public class CreateAluno extends AppCompatActivity {
@@ -23,8 +27,12 @@ public class CreateAluno extends AppCompatActivity {
     EditText horaS;
     EditText perm;
     Button addButton;
-    SimpleDateFormat formatD = new SimpleDateFormat("yyyy-MM-dd");
-    SimpleDateFormat hora = new SimpleDateFormat("hh:mm:ss");
+    DbHelper myDB;
+
+    @SuppressLint("SimpleDateFormat")
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    @SuppressLint("SimpleDateFormat")
+    SimpleDateFormat hourFormat = new SimpleDateFormat("HH:mm:ss");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,20 +52,23 @@ public class CreateAluno extends AppCompatActivity {
         horaS = findViewById(R.id.editTextTime5);
         perm = findViewById(R.id.editTextTime6);
         addButton = findViewById(R.id.button);
+
+        myDB = new DbHelper(getApplicationContext());
+
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DbHelper myDB = new DbHelper(CreateAluno.this);
                 try {
                     myDB.adcAluno(nome.getText().toString().trim(),
-                    Integer.valueOf(rgm.getText().toString().toString().trim()),
-                            Integer.valueOf(codigo.getText().toString().toString().trim()),
-                            formatD.parse(data.getText().toString().trim()),
-                            hora.parse(horaE.getText().toString().trim()),
-                            hora.parse(horaS.getText().toString().trim()),
-                            hora.parse(perm.getText().toString().trim()));
+                    Integer.parseInt(String.valueOf(rgm.getText()).trim()),
+                            Integer.parseInt(String.valueOf(codigo.getText()).trim()),
+                            data.getText().toString().isEmpty() ? null : dateFormat.parse(String.valueOf(data.getText()).trim()),
+                            horaE.getText().toString().isEmpty() ? null : hourFormat.parse(String.valueOf(horaE.getText()).trim()),
+                            horaS.getText().toString().isEmpty() ? null : hourFormat.parse(String.valueOf(horaS.getText()).trim()),
+                            perm.getText().toString().isEmpty() ? null : hourFormat.parse(String.valueOf(perm.getText()).trim()));
                 } catch (ParseException e) {
-                    throw new RuntimeException(e);
+                    Toast.makeText(CreateAluno.this, "EITA PORRA", Toast.LENGTH_SHORT).show();
+                    Log.d("FUDEU", Objects.requireNonNull(e.getMessage()));
                 }
                 Intent in = new Intent(CreateAluno.this, MainActivity.class);
                 startActivity(in);
