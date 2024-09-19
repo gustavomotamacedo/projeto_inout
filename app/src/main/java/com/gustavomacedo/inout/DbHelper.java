@@ -4,11 +4,12 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.format.DateFormat;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.sql.Time;
 import java.util.Date;
 
 public class DbHelper extends SQLiteOpenHelper {
@@ -33,7 +34,7 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onCreate(SQLiteDatabase db) {
+    public void onCreate(@NonNull SQLiteDatabase db) {
         String query = "CREATE TABLE "+ TABLE_NAME +" (" +
                 COLUMN_NOME +" VARCHAR(255) NOT NULL," +
                 COLUMN_RGM +" INT NOT NULL," +
@@ -52,17 +53,18 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     // TODO : Função para adicionar
-    void adcAluno(String nome, int rgm, int codigo, Date data, Time horaE, Time horaS, Time perm){
+    void adcAluno(String nome, int rgm, int codigo,@Nullable Date data,@Nullable Date horaE,@Nullable Date horaS,@Nullable Date perm){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_NOME, nome);
-        cv.put(COLUMN_NOME, rgm);
-        cv.put(COLUMN_NOME, codigo);
-        cv.put(COLUMN_NOME, data.getDate());
-        cv.put(COLUMN_NOME, horaE.getTime());
-        cv.put(COLUMN_NOME, horaS.getTime());
-        cv.put(COLUMN_NOME, perm.getTime());
+        cv.put(COLUMN_RGM, rgm);
+        cv.put(COLUMN_CODIGO, codigo);
+        cv.put(COLUMN_DATA, String.valueOf(DateFormat.format("yyyy-MM-dd", data)));
+        cv.put(COLUMN_HORA_ENTRADA, String.valueOf(DateFormat.format("hh:mm:ss", horaE)));
+        cv.put(COLUMN_HORA_SAIDA, String.valueOf(DateFormat.format("hh:mm:ss", horaS)));
+        cv.put(COLUMN_TEMPO_PERMANENCIA, String.valueOf(DateFormat.format("hh:mm:ss", perm)));
         long resultado = db.insert(TABLE_NAME, null, cv);
+
 
         if (resultado == -1){
             Toast.makeText(context, "Falhou", Toast.LENGTH_SHORT).show();
