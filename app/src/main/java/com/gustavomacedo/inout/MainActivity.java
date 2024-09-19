@@ -1,25 +1,16 @@
 package com.gustavomacedo.inout;
 
-import android.database.Cursor;
+import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Toast;
+import android.view.View;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-
-    private RecyclerView alunosView;
-    private DbHelper dbHelper;
-    private ArrayList<String> alunosNome, alunosRGM, alunosData, alunosHoraEntrada, alunosHoraSaida;
-    private AlunoAdapter alunoAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,52 +22,9 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
-        alunosView = findViewById(R.id.alunosView);
-        dbHelper = new DbHelper(MainActivity.this);
-
-        alunosNome = new ArrayList<>();
-        alunosRGM = new ArrayList<>();
-        alunosData = new ArrayList<>();
-        alunosHoraEntrada = new ArrayList<>();
-        alunosHoraSaida = new ArrayList<>();
-
-        guardarDadosNosArraysPorCodigo(123456787);
-
-        alunoAdapter = new AlunoAdapter(MainActivity.this, alunosNome, alunosRGM, alunosData, alunosHoraEntrada, alunosHoraSaida);
-
-        alunosView.setAdapter(alunoAdapter);
-        alunosView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-
     }
-
-    void guardarTodosDadosNosArrays() {
-        Cursor cursor = dbHelper.lerTodosOsDados();
-        if (cursor.getCount() == 0) {
-            Toast.makeText(getApplicationContext(), "Sem dados na tabela", Toast.LENGTH_SHORT).show();
-        } else {
-            while(cursor.moveToNext()) {
-                alunosNome.add(cursor.getString(0));
-                alunosRGM.add(cursor.getString(1));
-                alunosData.add(cursor.getString(3));
-                alunosHoraEntrada.add(cursor.getString(4));
-                alunosHoraSaida.add(cursor.getString(5));
-            }
-        }
-    }
-
-    void guardarDadosNosArraysPorCodigo(int codigo) {
-        Cursor cursor = dbHelper.pesquisarPorCodigo(codigo);
-        if (cursor.getCount() == 0) {
-            Toast.makeText(getApplicationContext(), "Sem dados na tabela", Toast.LENGTH_SHORT).show();
-        } else {
-            while(cursor.moveToNext()) {
-                alunosNome.add(cursor.getString(0));
-                alunosRGM.add(cursor.getString(1));
-                alunosData.add(cursor.getString(3));
-                alunosHoraEntrada.add(cursor.getString(4));
-                alunosHoraSaida.add(cursor.getString(5));
-            }
-        }
+    public void mudarTela(View v){
+        Intent in = new Intent(MainActivity.this, CreateAluno.class);
+        startActivity(in);
     }
 }
