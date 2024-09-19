@@ -58,9 +58,9 @@ public class MainActivity extends AppCompatActivity {
             while(cursor.moveToNext()) {
                 alunosNome.add(cursor.getString(0));
                 alunosRGM.add(cursor.getString(1));
-                alunosData.add(cursor.getString(2));
-                alunosHoraEntrada.add(cursor.getString(3));
-                alunosHoraSaida.add(cursor.getString(4));
+                alunosData.add(cursor.getString(3));
+                alunosHoraEntrada.add(cursor.getString(4));
+                alunosHoraSaida.add(cursor.getString(5));
             }
         }
     }

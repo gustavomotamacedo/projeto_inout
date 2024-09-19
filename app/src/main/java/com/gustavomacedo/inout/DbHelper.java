@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.format.DateFormat;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -15,6 +16,7 @@ import java.util.Date;
 public class DbHelper extends SQLiteOpenHelper {
 
     private Context context;
+
     private static final String DATABASE_NAME = "InOut.db";
     private static final int DATABASE_VERSION = 1;
 
@@ -53,16 +55,32 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     // TODO : Função para adicionar
-    void adcAluno(String nome, int rgm, int codigo, Date data, Time horaE, Time horaS, Time perm){
+    void adcAluno(String nome, int rgm, int codigo, @Nullable Date data, @Nullable Time horaE, @Nullable Time horaS, @Nullable Time perm) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_NOME, nome);
-        cv.put(COLUMN_NOME, rgm);
-        cv.put(COLUMN_NOME, codigo);
-        cv.put(COLUMN_NOME, data.getDate());
-        cv.put(COLUMN_NOME, horaE.getTime());
-        cv.put(COLUMN_NOME, horaS.getTime());
-        cv.put(COLUMN_NOME, perm.getTime());
+        cv.put(COLUMN_RGM, rgm);
+        cv.put(COLUMN_CODIGO, codigo);
+        cv.put(COLUMN_DATA, String.valueOf(DateFormat.format("yyyy-MM-dd", data)));
+        cv.put(COLUMN_HORA_ENTRADA, String.valueOf(DateFormat.format("hh:mm:ss", horaE)));
+        cv.put(COLUMN_HORA_SAIDA, String.valueOf(DateFormat.format("hh:mm:ss", horaS)));
+        cv.put(COLUMN_TEMPO_PERMANENCIA, String.valueOf(DateFormat.format("hh:mm:ss", perm)));
+        long resultado = db.insert(TABLE_NAME, null, cv);
+
+        if (resultado == -1){
+            Toast.makeText(context, "Falhou", Toast.LENGTH_SHORT).show();
+        }else{
+            Toast.makeText(context, "Adicionado com sucesso", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    void adcAluno(String nome, int rgm, int codigo, Date data) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_NOME, nome);
+        cv.put(COLUMN_RGM, rgm);
+        cv.put(COLUMN_CODIGO, codigo);
+        cv.put(COLUMN_DATA, String.valueOf(DateFormat.format("yyyy-MM-dd", data)));
         long resultado = db.insert(TABLE_NAME, null, cv);
 
         if (resultado == -1){
@@ -90,4 +108,5 @@ public class DbHelper extends SQLiteOpenHelper {
     // TODO : Função para retornar dados por codigo
     // TODO : Função para atualizar os dados
     // TODO : Função para deletar os dados
+    // TODO : LIMPAR A TABELA
 }
