@@ -10,7 +10,6 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
-import java.sql.Time;
 import java.util.Date;
 
 public class DbHelper extends SQLiteOpenHelper {
@@ -55,13 +54,13 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     // TODO : Função para adicionar
-    void adcAluno(String nome, int rgm, int codigo, @Nullable Date data, @Nullable Time horaE, @Nullable Time horaS, @Nullable Time perm) {
+    void adcAluno(String nome, int rgm, int codigo, @Nullable Date data, @Nullable Date horaE, @Nullable Date horaS, @Nullable Date perm) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_NOME, nome);
         cv.put(COLUMN_RGM, rgm);
         cv.put(COLUMN_CODIGO, codigo);
-        cv.put(COLUMN_DATA, String.valueOf(DateFormat.format("yyyy-MM-dd", data)));
+        cv.put(COLUMN_DATA, data == null ? String.valueOf(DateFormat.format("yyyy-MM-dd", new Date())) : String.valueOf(DateFormat.format("yyyy-MM-dd", data)));
         cv.put(COLUMN_HORA_ENTRADA, String.valueOf(DateFormat.format("hh:mm:ss", horaE)));
         cv.put(COLUMN_HORA_SAIDA, String.valueOf(DateFormat.format("hh:mm:ss", horaS)));
         cv.put(COLUMN_TEMPO_PERMANENCIA, String.valueOf(DateFormat.format("hh:mm:ss", perm)));
@@ -90,7 +89,7 @@ public class DbHelper extends SQLiteOpenHelper {
         }
     }
     
-    public Cursor readAllData() {
+    public Cursor lerTodosOsDados() {
 
         String query = "SELECT * FROM " + TABLE_NAME;
         SQLiteDatabase db = this.getReadableDatabase();
@@ -103,9 +102,23 @@ public class DbHelper extends SQLiteOpenHelper {
 
         return cursor;
     }
+
+    public Cursor pesquisarPorCodigo(int codigo) {
+
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_CODIGO + "=" + codigo;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = null;
+
+        if (db != null) {
+            cursor = db.rawQuery(query, null);
+        }
+
+        return cursor;
+    }
     // TODO : Função para retornar dados por nome
     // TODO : Função para retornar dados por rgm
-    // TODO : Função para retornar dados por codigo
     // TODO : Função para atualizar os dados
     // TODO : Função para deletar os dados
     // TODO : LIMPAR A TABELA

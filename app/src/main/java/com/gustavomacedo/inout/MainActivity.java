@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         alunosHoraEntrada = new ArrayList<>();
         alunosHoraSaida = new ArrayList<>();
 
-        guardarDadosNosArrays();
+        guardarDadosNosArraysPorCodigo(123456787);
 
         alunoAdapter = new AlunoAdapter(MainActivity.this, alunosNome, alunosRGM, alunosData, alunosHoraEntrada, alunosHoraSaida);
 
@@ -50,8 +50,23 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    void guardarDadosNosArrays() {
-        Cursor cursor = dbHelper.readAllData();
+    void guardarTodosDadosNosArrays() {
+        Cursor cursor = dbHelper.lerTodosOsDados();
+        if (cursor.getCount() == 0) {
+            Toast.makeText(getApplicationContext(), "Sem dados na tabela", Toast.LENGTH_SHORT).show();
+        } else {
+            while(cursor.moveToNext()) {
+                alunosNome.add(cursor.getString(0));
+                alunosRGM.add(cursor.getString(1));
+                alunosData.add(cursor.getString(3));
+                alunosHoraEntrada.add(cursor.getString(4));
+                alunosHoraSaida.add(cursor.getString(5));
+            }
+        }
+    }
+
+    void guardarDadosNosArraysPorCodigo(int codigo) {
+        Cursor cursor = dbHelper.pesquisarPorCodigo(codigo);
         if (cursor.getCount() == 0) {
             Toast.makeText(getApplicationContext(), "Sem dados na tabela", Toast.LENGTH_SHORT).show();
         } else {
