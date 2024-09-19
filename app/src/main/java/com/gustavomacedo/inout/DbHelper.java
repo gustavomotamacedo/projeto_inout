@@ -2,6 +2,7 @@ package com.gustavomacedo.inout;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.widget.Toast;
@@ -70,7 +71,20 @@ public class DbHelper extends SQLiteOpenHelper {
             Toast.makeText(context, "Adicionado com sucesso", Toast.LENGTH_SHORT).show();
         }
     }
-    // TODO : Função para retornar todos os dados
+    
+    public Cursor readAllData() {
+
+        String query = "SELECT * FROM " + TABLE_NAME;
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = null;
+
+        if (db != null){
+            cursor = db.rawQuery(query, null);
+        }
+
+        return cursor;
+    }
     // TODO : Função para retornar dados por nome
     // TODO : Função para retornar dados por rgm
     // TODO : Função para retornar dados por codigo
