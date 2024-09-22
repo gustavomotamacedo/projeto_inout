@@ -1,15 +1,24 @@
 package com.gustavomacedo.inout;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Build;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
+import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Date;
 
 public class DbHelper extends SQLiteOpenHelper {
@@ -123,13 +132,73 @@ public class DbHelper extends SQLiteOpenHelper {
     // TODO : Função para retornar dados por rgm
     // TODO : Função para atualizar os dados
     // TODO : Função para deletar os dados
-    
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @SuppressLint({"Range", "Recycle"})
+    public void atualizarEntradaESaida(String codigo) {
+        SQLiteDatabase dbWrite = this.getWritableDatabase();
+        SQLiteDatabase dbRead = this.getReadableDatabase();
+        ContentValues cv = new ContentValues();
+        String hourFormat = "hh:mm:ss";
+        Date now = new Date();
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat("hh:mm:ss");
+        
+        Cursor line = null;
+        
+        long result = 0;
+
+        if (dbWrite != null) {
+            cv.put(COLUMN_HORA_ENTRADA, (String) DateFormat.format(hourFormat, now));
+            result = dbWrite.update(TABLE_NAME, cv, COLUMN_CODIGO + "=? and " + COLUMN_HORA_ENTRADA + " IS NULL", new String[]{codigo});
+            if (result == 0) {
+                cv.clear();
+                cv.put(COLUMN_HORA_SAIDA, (String) DateFormat.format(hourFormat, now));
+                result = dbWrite.update(TABLE_NAME, cv, COLUMN_CODIGO + "=? and " + COLUMN_HORA_SAIDA + " IS NULL", new String[]{codigo});
+                cv.clear();
+                line = dbWrite.rawQuery("SELECT "+ COLUMN_HORA_ENTRADA + ", " + COLUMN_HORA_SAIDA +" FROM " + TABLE_NAME + " WHERE " + COLUMN_CODIGO + "=?", new String[]{codigo});
+                line.moveToFirst();
+                try {
+                    DateTimeFormatter formatterExpecificoParaEssaConta = DateTimeFormatter.ofPattern("HH:mm:ss");
+                    LocalTime entrada = null;
+                    LocalTime saida = null;
+                    Duration diff = null;
+
+                    entrada = LocalTime.parse(line.getString(0), formatterExpecificoParaEssaConta);
+                    saida = LocalTime.parse(line.getString(1), formatterExpecificoParaEssaConta);
+
+                    assert saida != null;
+                    assert entrada != null;
+                    diff = Duration.between(entrada, saida);
+
+                    LocalTime diferencaFormatada = LocalTime.MIDNIGHT.plus(diff);
+                    String strDiff = diferencaFormatada.format(formatterExpecificoParaEssaConta);
+
+                    cv.put(COLUMN_TEMPO_PERMANENCIA, strDiff);
+                    result = dbWrite.update(TABLE_NAME, cv, COLUMN_CODIGO + "=?", new String[]{codigo});
+                } catch (Exception e) {
+                    Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.e("BUCETA", Arrays.toString(e.getStackTrace()));
+                }
+            }
+        }
+
+        if (result == -1) {
+            Toast.makeText(context, "Deu ruim aqui", Toast.LENGTH_SHORT).show();
+        }
+        
+    }
+
     public void limparTabela() {
         SQLiteDatabase db = this.getReadableDatabase();
         db.delete(TABLE_NAME, null, null);
     }
 
-    public void mockarDados() {
+    public void resetarTestes() {
+        limparTabela();
+        mockarDados();
+    }
+
+    private void mockarDados() {
         this.adcAluno(
                 "Teste 001",
                 12345678,
@@ -143,7 +212,7 @@ public class DbHelper extends SQLiteOpenHelper {
                 new Date()
         );
         this.adcAluno(
-                "Teste 001",
+                "Teste 003",
                 12345676,
                 41959718,
                 new Date()
