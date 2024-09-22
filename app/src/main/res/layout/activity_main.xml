@@ -54,4 +54,13 @@
         android:text="Exportar"
         app:layout_constraintBottom_toTopOf="@+id/btnScan"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btnLimpar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="Limpar"
+        app:layout_constraintBottom_toTopOf="@+id/btnCsv"
+        app:layout_constraintStart_toEndOf="@+id/btnExportar" />
 </androidx.constraintlayout.widget.ConstraintLayout>

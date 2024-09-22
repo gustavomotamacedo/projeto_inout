@@ -36,7 +36,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private RecyclerView alunosView;
-    private Button btnScan, btnCsv, btnExportar;
+    private Button btnScan, btnCsv, btnExportar, btnLimpar;
 
     private DbHelper dbHelper;
     private ArrayList<String> alunosId, alunosNome, alunosRGM, alunosCodigo, alunosData, alunosHoraEntrada, alunosHoraSaida, alunosPermanencia;
@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
         btnScan = findViewById(R.id.btnScan);
         btnCsv = findViewById(R.id.btnCsv);
         btnExportar = findViewById(R.id.btnExportar);
+        btnLimpar = findViewById(R.id.btnLimpar);
 
         alunosId = new ArrayList<>();
         alunosNome = new ArrayList<>();
@@ -92,6 +93,11 @@ public class MainActivity extends AppCompatActivity {
 
         btnExportar.setOnClickListener(v -> {
             exportarDadosParaCsv();
+        });
+
+        btnLimpar.setOnClickListener(v -> {
+            dbHelper.limparTabela();
+            recreate();
         });
     }
 
