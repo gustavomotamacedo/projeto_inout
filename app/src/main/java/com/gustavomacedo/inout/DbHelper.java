@@ -118,6 +118,7 @@ public class DbHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
+    // TODO : Função para deletar os dados
     public void deleta(String codigo){
         SQLiteDatabase db = this.getWritableDatabase();
         long resultado = db.delete(TABLE_NAME,COLUMN_CODIGO+"=?",new String[]{codigo});
@@ -129,9 +130,11 @@ public class DbHelper extends SQLiteOpenHelper {
         }
 
     }
+
+    
     // TODO : Função para retornar dados por nome
     // TODO : Função para retornar dados por rgm
     // TODO : Função para atualizar os dados
-    // TODO : Função para deletar os dados
+
     // TODO : LIMPAR A TABELA
 }
