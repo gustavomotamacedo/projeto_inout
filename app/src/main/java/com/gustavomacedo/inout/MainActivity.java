@@ -34,10 +34,10 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity {
 
     private RecyclerView alunosView;
-    private Button btnScan;
+    private Button btnScan, btnCsv, btnExportar;
 
     private DbHelper dbHelper;
-    private ArrayList<String> alunosNome, alunosRGM, alunosData, alunosHoraEntrada, alunosHoraSaida, alunosPermanencia;
+    private ArrayList<String> alunosId, alunosNome, alunosRGM, alunosCodigo, alunosData, alunosHoraEntrada, alunosHoraSaida, alunosPermanencia;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
 
         alunosView = findViewById(R.id.alunosView);
         btnScan = findViewById(R.id.btnScan);
+        btnCsv = findViewById(R.id.btnCsv);
+        btnExportar = findViewById(R.id.btnExportar);
 
         alunosNome = new ArrayList<>();
         alunosRGM = new ArrayList<>();
@@ -62,23 +64,6 @@ public class MainActivity extends AppCompatActivity {
 
         dbHelper = new DbHelper(getApplicationContext());
 
-        dbHelper.limparTabela();
-
-        try {
-            CSVReader csvReader = new CSVReaderBuilder(new FileReader("/data/data/com.gustavomacedo.inout/files/alunos.csv")).build();
-            String[] nextLine;
-            Date now = new Date();
-            int c = 0;
-            while((nextLine = csvReader.readNext()) != null) {
-                if (c == 0) {
-                    c++;
-                } else {
-                    dbHelper.adcAluno(nextLine[1], Integer.parseInt(nextLine[2]), Integer.parseInt(nextLine[3]), now);
-                }
-            }
-        } catch (CsvValidationException | IOException e) {
-            throw new RuntimeException(e);
-        }
 
         adicionarTodosDadosNosArrays();
 
@@ -97,6 +82,31 @@ public class MainActivity extends AppCompatActivity {
             scanCode();
         });
 
+        btnCsv.setOnClickListener(v -> {
+            dbHelper.limparTabela();
+
+            try {
+                CSVReader csvReader = new CSVReaderBuilder(new FileReader("/data/data/com.gustavomacedo.inout/files/alunos.csv")).build();
+                String[] nextLine;
+                Date now = new Date();
+                int c = 0;
+                while((nextLine = csvReader.readNext()) != null) {
+                    if (c == 0) {
+                        c++;
+                    } else {
+                        dbHelper.adcAluno(nextLine[1], Integer.parseInt(nextLine[2]), Integer.parseInt(nextLine[3]), now);
+                    }
+                }
+            } catch (CsvValidationException | IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            recreate();
+        });
+
+        btnExportar.setOnClickListener(v -> {
+
+        });
     }
 
     public void scanCode() {
@@ -142,6 +152,17 @@ public class MainActivity extends AppCompatActivity {
                 alunosHoraEntrada.add(cursor.getString(5));
                 alunosHoraSaida.add(cursor.getString(6));
                 alunosPermanencia.add(cursor.getString(7));
+            }
+        }
+    }
+
+    public void exportarDadosParaCsv() {
+        Cursor cursor = dbHelper.lerTodosOsDados();
+        if (cursor == null) {
+            Toast.makeText(this, "Não há dados", Toast.LENGTH_SHORT).show();
+        } else {
+            while(cursor.moveToNext()) {
+
             }
         }
     }
