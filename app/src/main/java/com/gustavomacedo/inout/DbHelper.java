@@ -21,6 +21,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
     private static final String TABLE_NAME = "alunos";
 
+    private static final String COLUMN_ID = "_id";
     private static final String COLUMN_NOME = "nome";
     private static final String COLUMN_RGM = "rgm";
     private static final String COLUMN_CODIGO = "codigo";
@@ -37,6 +38,7 @@ public class DbHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String query = "CREATE TABLE "+ TABLE_NAME +" (" +
+                COLUMN_ID +" INTEGER PRIMARY KEY AUTOINCREMENT," +
                 COLUMN_NOME +" VARCHAR(255) NOT NULL," +
                 COLUMN_RGM +" INT NOT NULL," +
                 COLUMN_CODIGO +" INT NOT NULL," +
@@ -121,5 +123,30 @@ public class DbHelper extends SQLiteOpenHelper {
     // TODO : Função para retornar dados por rgm
     // TODO : Função para atualizar os dados
     // TODO : Função para deletar os dados
-    // TODO : LIMPAR A TABELA
+    
+    public void limparTabela() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        db.delete(TABLE_NAME, null, null);
+    }
+
+    public void mockarDados() {
+        this.adcAluno(
+                "Teste 001",
+                12345678,
+                919591948,
+                new Date()
+        );
+        this.adcAluno(
+                "Teste 002",
+                12345677,
+                681627626,
+                new Date()
+        );
+        this.adcAluno(
+                "Teste 001",
+                12345676,
+                41959718,
+                new Date()
+        );
+    }
 }
