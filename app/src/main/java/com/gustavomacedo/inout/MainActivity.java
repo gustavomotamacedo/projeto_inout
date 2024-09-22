@@ -3,6 +3,7 @@ package com.gustavomacedo.inout;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -30,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private Button btnScan;
 
     private DbHelper dbHelper;
-    private ArrayList<String> alunosNome, alunosRGM, alunosData, alunosHoraEntrada, alunosHoraSaida;
+    private ArrayList<String> alunosNome, alunosRGM, alunosData, alunosHoraEntrada, alunosHoraSaida, alunosPermanencia;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,10 +52,10 @@ public class MainActivity extends AppCompatActivity {
         alunosData = new ArrayList<>();
         alunosHoraEntrada = new ArrayList<>();
         alunosHoraSaida = new ArrayList<>();
+        alunosPermanencia = new ArrayList<>();
 
         dbHelper = new DbHelper(getApplicationContext());
-
-        dbHelper.resetarTestes();
+        
         adicionarTodosDadosNosArrays();
 
         AlunoAdapter adapter = new AlunoAdapter(getApplicationContext(),
@@ -62,7 +63,8 @@ public class MainActivity extends AppCompatActivity {
                 alunosRGM,
                 alunosData,
                 alunosHoraEntrada,
-                alunosHoraSaida);
+                alunosHoraSaida,
+                alunosPermanencia);
 
         alunosView.setAdapter(adapter);
         alunosView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
@@ -98,7 +100,9 @@ public class MainActivity extends AppCompatActivity {
             String codigo = result.getContents();
             Log.d("PORRA", codigo);
             Log.d("PORRA", String.valueOf(Integer.parseInt(codigo.trim())));
-            dbHelper.atualizarEntradaESaida(codigo);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                dbHelper.atualizarEntradaESaida(codigo);
+            }
         }
     });
 
@@ -113,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
                 alunosData.add(cursor.getString(4));
                 alunosHoraEntrada.add(cursor.getString(5));
                 alunosHoraSaida.add(cursor.getString(6));
+                alunosPermanencia.add(cursor.getString(7));
             }
         }
     }

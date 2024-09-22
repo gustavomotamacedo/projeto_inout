@@ -14,15 +14,16 @@ import java.util.ArrayList;
 public class AlunoAdapter extends RecyclerView.Adapter<AlunoAdapter.AlunoViewHolder> {
 
     private Context context;
-    private ArrayList alunosNome, alunosRGM, alunosData, alunosHoraEntrada, alunosHoraSaida;
+    private ArrayList alunosNome, alunosRGM, alunosData, alunosHoraEntrada, alunosHoraSaida, alunosPermanecia;
 
-    public AlunoAdapter(Context context, ArrayList alunosNome, ArrayList alunosRGM, ArrayList alunosData, ArrayList alunosHoraEntrada, ArrayList alunosHoraSaida) {
+    public AlunoAdapter(Context context, ArrayList alunosNome, ArrayList alunosRGM, ArrayList alunosData, ArrayList alunosHoraEntrada, ArrayList alunosHoraSaida, ArrayList alunosPermanecia) {
         this.context = context;
         this.alunosNome = alunosNome;
         this.alunosRGM = alunosRGM;
         this.alunosData = alunosData;
         this.alunosHoraEntrada = alunosHoraEntrada;
         this.alunosHoraSaida = alunosHoraSaida;
+        this.alunosPermanecia = alunosPermanecia;
     }
 
     @NonNull
@@ -40,6 +41,7 @@ public class AlunoAdapter extends RecyclerView.Adapter<AlunoAdapter.AlunoViewHol
         holder.alunoData.setText(alunosData.get(position) == null ? "" : alunosData.get(position).toString());
         holder.alunoHoraEntrada.setText(alunosHoraEntrada.get(position) == null ? "" : alunosHoraEntrada.get(position).toString());
         holder.alunoHoraSaida.setText(alunosHoraSaida.get(position) == null ? "" : alunosHoraSaida.get(position).toString());
+        holder.alunoPermanencia.setText(alunosPermanecia.get(position) == null ? "" : alunosPermanecia.get(position).toString());
     }
 
     @Override
@@ -49,7 +51,7 @@ public class AlunoAdapter extends RecyclerView.Adapter<AlunoAdapter.AlunoViewHol
 
     public class AlunoViewHolder extends RecyclerView.ViewHolder {
 
-        TextView alunoNome, alunoRGM, alunoData, alunoHoraEntrada, alunoHoraSaida;
+        TextView alunoNome, alunoRGM, alunoData, alunoHoraEntrada, alunoHoraSaida, alunoPermanencia;
 
         public AlunoViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -58,6 +60,7 @@ public class AlunoAdapter extends RecyclerView.Adapter<AlunoAdapter.AlunoViewHol
             alunoData = itemView.findViewById(R.id.alunoData);
             alunoHoraEntrada = itemView.findViewById(R.id.alunoHoraEntrada);
             alunoHoraSaida = itemView.findViewById(R.id.alunoHoraSaida);
+            alunoPermanencia = itemView.findViewById(R.id.alunoPermanencia);
         }
     }
 }
