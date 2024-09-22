@@ -21,12 +21,12 @@ import java.util.Objects;
 
 
 public class CreateAluno extends AppCompatActivity {
-    EditText nome,rgm, codigo;
+    EditText nome,rgm, codigo, cod;
     EditText data;
     EditText horaE;
     EditText horaS;
     EditText perm;
-    Button addButton;
+    Button addButton, delBtn;
     DbHelper myDB;
 
     @SuppressLint("SimpleDateFormat")
@@ -52,7 +52,6 @@ public class CreateAluno extends AppCompatActivity {
         horaS = findViewById(R.id.editTextTime5);
         perm = findViewById(R.id.editTextTime6);
         addButton = findViewById(R.id.button);
-
         myDB = new DbHelper(getApplicationContext());
 
         addButton.setOnClickListener(new View.OnClickListener() {
@@ -74,6 +73,18 @@ public class CreateAluno extends AppCompatActivity {
                 startActivity(in);
             }
 
+        });
+
+        cod = findViewById(R.id.edtcod);
+        delBtn = findViewById(R.id.btnDel);
+
+        delBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                DbHelper myDB = new DbHelper(CreateAluno.this);
+                myDB.deleta(cod.getText().toString().trim());
+                finish();
+            }
         });
 
     }

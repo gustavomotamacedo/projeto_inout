@@ -117,6 +117,18 @@ public class DbHelper extends SQLiteOpenHelper {
 
         return cursor;
     }
+
+    public void deleta(String codigo){
+        SQLiteDatabase db = this.getWritableDatabase();
+        long resultado = db.delete(TABLE_NAME,COLUMN_CODIGO+"=?",new String[]{codigo});
+
+        if (resultado == -1){
+            Toast.makeText(context,"Erro ao deletar",Toast.LENGTH_SHORT).show();
+        }else{
+            Toast.makeText(context,"Deletado com sucesso",Toast.LENGTH_SHORT).show();
+        }
+
+    }
     // TODO : Função para retornar dados por nome
     // TODO : Função para retornar dados por rgm
     // TODO : Função para atualizar os dados

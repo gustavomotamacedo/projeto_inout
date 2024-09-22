@@ -70,5 +70,19 @@
             android:layout_height="wrap_content"
             android:text="Button" />
 
+        <EditText
+            android:id="@+id/edtcod"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Codigo do Aluno"
+            android:inputType="text" />
+
+        <Button
+            android:id="@+id/btnDel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Apagar" />
+
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
