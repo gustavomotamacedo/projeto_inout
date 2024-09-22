@@ -22,8 +22,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import com.opencsv.exceptions.CsvValidationException;
 
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -55,7 +61,25 @@ public class MainActivity extends AppCompatActivity {
         alunosPermanencia = new ArrayList<>();
 
         dbHelper = new DbHelper(getApplicationContext());
-        
+
+        dbHelper.limparTabela();
+
+        try {
+            CSVReader csvReader = new CSVReaderBuilder(new FileReader("/data/data/com.gustavomacedo.inout/files/alunos.csv")).build();
+            String[] nextLine;
+            Date now = new Date();
+            int c = 0;
+            while((nextLine = csvReader.readNext()) != null) {
+                if (c == 0) {
+                    c++;
+                } else {
+                    dbHelper.adcAluno(nextLine[1], Integer.parseInt(nextLine[2]), Integer.parseInt(nextLine[3]), now);
+                }
+            }
+        } catch (CsvValidationException | IOException e) {
+            throw new RuntimeException(e);
+        }
+
         adicionarTodosDadosNosArrays();
 
         AlunoAdapter adapter = new AlunoAdapter(getApplicationContext(),
