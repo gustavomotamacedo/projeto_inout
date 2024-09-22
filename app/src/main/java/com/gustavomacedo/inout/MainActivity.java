@@ -1,5 +1,6 @@
 package com.gustavomacedo.inout;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -22,14 +23,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
-import com.opencsv.CSVReader;
-import com.opencsv.CSVReaderBuilder;
-import com.opencsv.exceptions.CsvValidationException;
+import com.opencsv.bean.CsvToBeanBuilder;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -55,8 +57,10 @@ public class MainActivity extends AppCompatActivity {
         btnCsv = findViewById(R.id.btnCsv);
         btnExportar = findViewById(R.id.btnExportar);
 
+        alunosId = new ArrayList<>();
         alunosNome = new ArrayList<>();
         alunosRGM = new ArrayList<>();
+        alunosCodigo = new ArrayList<>();
         alunosData = new ArrayList<>();
         alunosHoraEntrada = new ArrayList<>();
         alunosHoraSaida = new ArrayList<>();
@@ -83,30 +87,29 @@ public class MainActivity extends AppCompatActivity {
         });
 
         btnCsv.setOnClickListener(v -> {
-            dbHelper.limparTabela();
-
-            try {
-                CSVReader csvReader = new CSVReaderBuilder(new FileReader("/data/data/com.gustavomacedo.inout/files/alunos.csv")).build();
-                String[] nextLine;
-                Date now = new Date();
-                int c = 0;
-                while((nextLine = csvReader.readNext()) != null) {
-                    if (c == 0) {
-                        c++;
-                    } else {
-                        dbHelper.adcAluno(nextLine[1], Integer.parseInt(nextLine[2]), Integer.parseInt(nextLine[3]), now);
-                    }
-                }
-            } catch (CsvValidationException | IOException e) {
-                throw new RuntimeException(e);
-            }
-
-            recreate();
+            lerDadosDoCsv();
         });
 
         btnExportar.setOnClickListener(v -> {
-
+            exportarDadosParaCsv();
         });
+    }
+
+    private void lerDadosDoCsv() {
+        dbHelper.limparTabela();
+        try {
+            @SuppressLint("SdCardPath") List<CsvFormat> csvFormatList = new CsvToBeanBuilder(new FileReader("/data/data/com.gustavomacedo.inout/files/alunos.csv"))
+                    .withType(CsvFormat.class).build().parse();
+
+            for (CsvFormat aluno : csvFormatList) {
+                dbHelper.adcAluno(aluno.getNome(), Integer.parseInt(aluno.getRgm()), Integer.parseInt(aluno.getCodigo()), new Date(), aluno.getEntrada(), aluno.getSaida(), aluno.getPermanencia());
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        recreate();
     }
 
     public void scanCode() {
@@ -140,14 +143,42 @@ public class MainActivity extends AppCompatActivity {
         }
     });
 
+    public void resetarArrays() {
+        Cursor cursor = dbHelper.lerTodosOsDados();
+        if (cursor == null) {
+            Toast.makeText(this, "Não há dados", Toast.LENGTH_SHORT).show();
+        } else {
+            alunosId.clear();
+            alunosNome.clear();
+            alunosRGM.clear();
+            alunosCodigo.clear();
+            alunosData.clear();
+            alunosHoraEntrada.clear();
+            alunosHoraSaida.clear();
+            alunosPermanencia.clear();
+            while(cursor.moveToNext()) {
+                alunosId.add(cursor.getString(0));
+                alunosNome.add(cursor.getString(1));
+                alunosRGM.add(cursor.getString(2));
+                alunosCodigo.add(cursor.getString(3));
+                alunosData.add(cursor.getString(4));
+                alunosHoraEntrada.add(cursor.getString(5));
+                alunosHoraSaida.add(cursor.getString(6));
+                alunosPermanencia.add(cursor.getString(7));
+            }
+        }
+    }
+
     public void adicionarTodosDadosNosArrays() {
         Cursor cursor = dbHelper.lerTodosOsDados();
         if (cursor == null) {
             Toast.makeText(this, "Não há dados", Toast.LENGTH_SHORT).show();
         } else {
             while(cursor.moveToNext()) {
+                alunosId.add(cursor.getString(0));
                 alunosNome.add(cursor.getString(1));
                 alunosRGM.add(cursor.getString(2));
+                alunosCodigo.add(cursor.getString(3));
                 alunosData.add(cursor.getString(4));
                 alunosHoraEntrada.add(cursor.getString(5));
                 alunosHoraSaida.add(cursor.getString(6));
@@ -157,14 +188,35 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void exportarDadosParaCsv() {
-        Cursor cursor = dbHelper.lerTodosOsDados();
-        if (cursor == null) {
-            Toast.makeText(this, "Não há dados", Toast.LENGTH_SHORT).show();
-        } else {
-            while(cursor.moveToNext()) {
-
+        try {
+            PrintWriter printWriter = new PrintWriter(new File("/data/data/com.gustavomacedo.inout/files/alunos.csv"));
+            Cursor cursor = dbHelper.lerTodosOsDados();
+            ArrayList<String> linhasArrayList = new ArrayList<String>();
+            String[] linhas;
+            if (cursor == null) {
+                Toast.makeText(this, "Não há dados", Toast.LENGTH_SHORT).show();
+            } else {
+                resetarArrays();
+                printWriter.write("");
+                printWriter.println("_id,nome,rgm,codigo,data,hr_entrada,hr_saida,hr_permanencia");
+                for (int i = 0; i < alunosId.size(); i++) {
+                    printWriter.println(alunosId.get(i) + "," +
+                            alunosNome.get(i) + "," +
+                            alunosRGM.get(i) + "," +
+                            alunosCodigo.get(i) + "," +
+                            alunosData.get(i) + "," +
+                            (alunosHoraEntrada.get(i) != null ? alunosHoraEntrada.get(i) : "") + "," +
+                            (alunosHoraSaida.get(i) != null ? alunosHoraSaida.get(i) : "") + "," +
+                            (alunosPermanencia.get(i) != null ? alunosPermanencia.get(i) : ""));
+                }
+                printWriter.close();
+                Toast.makeText(this, "CSV EXPORTADO", Toast.LENGTH_SHORT).show();
             }
+        } catch (IOException e) {
+            Toast.makeText(this, "PUTA MERDA", Toast.LENGTH_SHORT).show();
+            throw new RuntimeException(e);
         }
+        recreate();
     }
 
     public void mudarTela(View v){
