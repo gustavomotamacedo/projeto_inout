@@ -27,7 +27,7 @@ public class CreateAluno extends AppCompatActivity {
     EditText horaS;
     EditText perm;
     Button addButton;
-    DbHelper myDB;
+    AlunoDbHelper myDB;
 
     @SuppressLint("SimpleDateFormat")
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -53,7 +53,7 @@ public class CreateAluno extends AppCompatActivity {
         perm = findViewById(R.id.editTextTime6);
         addButton = findViewById(R.id.button);
 
-        myDB = new DbHelper(getApplicationContext());
+        myDB = new AlunoDbHelper(getApplicationContext());
 
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -21,7 +21,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Date;
 
-public class DbHelper extends SQLiteOpenHelper {
+public class AlunoDbHelper extends SQLiteOpenHelper { //TODO: REFATORAR TIPO DE DATA
 
     private Context context;
 
@@ -30,31 +30,34 @@ public class DbHelper extends SQLiteOpenHelper {
 
     private static final String TABLE_NAME = "alunos";
 
+    // definindo as colunas da tabela como constantes
     private static final String COLUMN_ID = "_id";
     private static final String COLUMN_NOME = "nome";
     private static final String COLUMN_RGM = "rgm";
-    private static final String COLUMN_CODIGO = "codigo";
+    private static final String COLUMN_ID_EVENTO = "id_evento";
     private static final String COLUMN_DATA = "data";
     private static final String COLUMN_HORA_ENTRADA = "hora_entrada";
     private static final String COLUMN_HORA_SAIDA = "hora_saida";
     private static final String COLUMN_TEMPO_PERMANENCIA = "tempo_permanencia";
 
-    public DbHelper(@Nullable Context context) {
+    public AlunoDbHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.context = context;
     }
 
+    // comando para criar a tabela
     @Override
     public void onCreate(SQLiteDatabase db) {
         String query = "CREATE TABLE "+ TABLE_NAME +" (" +
                 COLUMN_ID +" INTEGER PRIMARY KEY AUTOINCREMENT," +
                 COLUMN_NOME +" VARCHAR(255) NOT NULL," +
                 COLUMN_RGM +" INT NOT NULL," +
-                COLUMN_CODIGO +" INT NOT NULL," +
+                COLUMN_ID_EVENTO +" INT NOT NULL," +
                 COLUMN_DATA +" DATE DEFAULT NULL," +
                 COLUMN_HORA_ENTRADA +" TIME DEFAULT NULL," +
                 COLUMN_HORA_SAIDA +" TIME DEFAULT NULL," +
-                COLUMN_TEMPO_PERMANENCIA +" TIME DEFAULT NULL);";
+                COLUMN_TEMPO_PERMANENCIA +" TIME DEFAULT NULL," +
+                "FOREIGN KEY ("+ COLUMN_ID_EVENTO +") REFERENCES eventos(id));";
         db.execSQL(query);
     }
 
@@ -64,13 +67,13 @@ public class DbHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    // TODO : Função para adicionar
-    void adcAluno(String nome, int rgm, int codigo, @Nullable Date data, @Nullable Date horaE, @Nullable Date horaS, @Nullable Date perm) {
+    // função de adicionar aluno
+    void adcAluno(String nome, int rgm, int idEvento, @Nullable Date data, @Nullable Date horaE, @Nullable Date horaS, @Nullable Date perm) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_NOME, nome);
         cv.put(COLUMN_RGM, rgm);
-        cv.put(COLUMN_CODIGO, codigo);
+        cv.put(COLUMN_ID_EVENTO, idEvento);
         cv.put(COLUMN_DATA, data == null ? String.valueOf(DateFormat.format("yyyy-MM-dd", new Date())) : String.valueOf(DateFormat.format("yyyy-MM-dd", data)));
         cv.put(COLUMN_HORA_ENTRADA, horaE == null ? null : String.valueOf(DateFormat.format("hh:mm:ss", horaE)));
         cv.put(COLUMN_HORA_SAIDA, horaS == null ? null :  String.valueOf(DateFormat.format("hh:mm:ss", horaS)));
@@ -84,12 +87,13 @@ public class DbHelper extends SQLiteOpenHelper {
         }
     }
 
-    void adcAluno(String nome, int rgm, int codigo, Date data) {
+    // função para adicionar aluno sem informar os horários de entrada e saída
+    void adcAluno(String nome, int rgm, int idEvento, Date data) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_NOME, nome);
         cv.put(COLUMN_RGM, rgm);
-        cv.put(COLUMN_CODIGO, codigo);
+        cv.put(COLUMN_ID_EVENTO, idEvento);
         cv.put(COLUMN_DATA, String.valueOf(DateFormat.format("yyyy-MM-dd", data)));
         long resultado = db.insert(TABLE_NAME, null, cv);
 
@@ -114,9 +118,9 @@ public class DbHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
-    public Cursor pesquisarPorCodigo(int codigo) {
+    public Cursor pesquisarPorEvento(int idEvento) {
 
-        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_CODIGO + "=" + codigo;
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_ID_EVENTO + "=" + idEvento;
 
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -137,7 +141,6 @@ public class DbHelper extends SQLiteOpenHelper {
     @SuppressLint({"Range", "Recycle"})
     public void atualizarEntradaESaida(String codigo) {
         SQLiteDatabase dbWrite = this.getWritableDatabase();
-        SQLiteDatabase dbRead = this.getReadableDatabase();
         ContentValues cv = new ContentValues();
         String hourFormat = "hh:mm:ss";
         Date now = new Date();
@@ -149,13 +152,13 @@ public class DbHelper extends SQLiteOpenHelper {
 
         if (dbWrite != null) {
             cv.put(COLUMN_HORA_ENTRADA, (String) DateFormat.format(hourFormat, now));
-            result = dbWrite.update(TABLE_NAME, cv, COLUMN_CODIGO + "=? and " + COLUMN_HORA_ENTRADA + " IS NULL", new String[]{codigo});
+            result = dbWrite.update(TABLE_NAME, cv, COLUMN_ID_EVENTO + "=? and " + COLUMN_HORA_ENTRADA + " IS NULL", new String[]{codigo});
             if (result == 0) {
                 cv.clear();
                 cv.put(COLUMN_HORA_SAIDA, (String) DateFormat.format(hourFormat, now));
-                result = dbWrite.update(TABLE_NAME, cv, COLUMN_CODIGO + "=? and " + COLUMN_HORA_SAIDA + " IS NULL", new String[]{codigo});
+                result = dbWrite.update(TABLE_NAME, cv, COLUMN_ID_EVENTO + "=? and " + COLUMN_HORA_SAIDA + " IS NULL", new String[]{codigo});
                 cv.clear();
-                line = dbWrite.rawQuery("SELECT "+ COLUMN_HORA_ENTRADA + ", " + COLUMN_HORA_SAIDA +" FROM " + TABLE_NAME + " WHERE " + COLUMN_CODIGO + "=?", new String[]{codigo});
+                line = dbWrite.rawQuery("SELECT "+ COLUMN_HORA_ENTRADA + ", " + COLUMN_HORA_SAIDA +" FROM " + TABLE_NAME + " WHERE " + COLUMN_ID_EVENTO + "=?", new String[]{codigo});
                 line.moveToFirst();
                 try {
                     DateTimeFormatter formatterExpecificoParaEssaConta = DateTimeFormatter.ofPattern("HH:mm:ss");
@@ -174,7 +177,7 @@ public class DbHelper extends SQLiteOpenHelper {
                     String strDiff = diferencaFormatada.format(formatterExpecificoParaEssaConta);
 
                     cv.put(COLUMN_TEMPO_PERMANENCIA, strDiff);
-                    result = dbWrite.update(TABLE_NAME, cv, COLUMN_CODIGO + "=?", new String[]{codigo});
+                    result = dbWrite.update(TABLE_NAME, cv, COLUMN_ID_EVENTO + "=?", new String[]{codigo});
                 } catch (Exception e) {
                     Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
                     Log.e("BUCETA", Arrays.toString(e.getStackTrace()));
@@ -202,19 +205,19 @@ public class DbHelper extends SQLiteOpenHelper {
         this.adcAluno(
                 "Teste 001",
                 12345678,
-                919591948,
+                1,
                 new Date()
         );
         this.adcAluno(
                 "Teste 002",
                 12345677,
-                681627626,
+                1,
                 new Date()
         );
         this.adcAluno(
                 "Teste 003",
                 12345676,
-                41959718,
+                2,
                 new Date()
         );
     }

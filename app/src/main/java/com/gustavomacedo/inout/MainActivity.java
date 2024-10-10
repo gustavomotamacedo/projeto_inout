@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView alunosView;
     private Button btnScan, btnCsv, btnExportar, btnLimpar;
 
-    private DbHelper dbHelper;
+    private AlunoDbHelper alunoDbHelper;
     private ArrayList<String> alunosId, alunosNome, alunosRGM, alunosCodigo, alunosData, alunosHoraEntrada, alunosHoraSaida, alunosPermanencia;
 
     @Override
@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         alunosHoraSaida = new ArrayList<>();
         alunosPermanencia = new ArrayList<>();
 
-        dbHelper = new DbHelper(getApplicationContext());
+        alunoDbHelper = new AlunoDbHelper(getApplicationContext());
 
 
         adicionarTodosDadosNosArrays();
@@ -96,19 +96,19 @@ public class MainActivity extends AppCompatActivity {
         });
 
         btnLimpar.setOnClickListener(v -> {
-            dbHelper.limparTabela();
+            alunoDbHelper.limparTabela();
             recreate();
         });
     }
 
     private void lerDadosDoCsv() {
-        dbHelper.limparTabela();
+        alunoDbHelper.limparTabela();
         try {
             @SuppressLint("SdCardPath") List<CsvFormat> csvFormatList = new CsvToBeanBuilder(new FileReader("/data/data/com.gustavomacedo.inout/files/alunos.csv"))
                     .withType(CsvFormat.class).build().parse();
 
             for (CsvFormat aluno : csvFormatList) {
-                dbHelper.adcAluno(aluno.getNome(), Integer.parseInt(aluno.getRgm()), Integer.parseInt(aluno.getCodigo()), new Date(), aluno.getEntrada(), aluno.getSaida(), aluno.getPermanencia());
+                alunoDbHelper.adcAluno(aluno.getNome(), Integer.parseInt(aluno.getRgm()), Integer.parseInt(aluno.getCodigo()), new Date(), aluno.getEntrada(), aluno.getSaida(), aluno.getPermanencia());
             }
 
         } catch (IOException e) {
@@ -144,13 +144,13 @@ public class MainActivity extends AppCompatActivity {
             Log.d("PORRA", codigo);
             Log.d("PORRA", String.valueOf(Integer.parseInt(codigo.trim())));
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                dbHelper.atualizarEntradaESaida(codigo);
+                alunoDbHelper.atualizarEntradaESaida(codigo);
             }
         }
     });
 
     public void resetarArrays() {
-        Cursor cursor = dbHelper.lerTodosOsDados();
+        Cursor cursor = alunoDbHelper.lerTodosOsDados();
         if (cursor == null) {
             Toast.makeText(this, "Não há dados", Toast.LENGTH_SHORT).show();
         } else {
@@ -176,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void adicionarTodosDadosNosArrays() {
-        Cursor cursor = dbHelper.lerTodosOsDados();
+        Cursor cursor = alunoDbHelper.lerTodosOsDados();
         if (cursor == null) {
             Toast.makeText(this, "Não há dados", Toast.LENGTH_SHORT).show();
         } else {
@@ -196,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
     public void exportarDadosParaCsv() {
         try {
             PrintWriter printWriter = new PrintWriter(new File("/data/data/com.gustavomacedo.inout/files/alunos.csv"));
-            Cursor cursor = dbHelper.lerTodosOsDados();
+            Cursor cursor = alunoDbHelper.lerTodosOsDados();
             ArrayList<String> linhasArrayList = new ArrayList<String>();
             String[] linhas;
             if (cursor == null) {
