@@ -47,4 +47,12 @@ public class EventosDbHelper extends SQLiteOpenHelper {
         cv.put(COLUMN_NOME, nome);
         long resultado = db.insert(TABLE_NAME, null, cv);
     }
+
+    public static String getTableName() {
+        return TABLE_NAME;
+    }
+
+    public static String getColumnQuantidadeAlunos() {
+        return COLUMN_QUANTIDADE_ALUNOS;
+    }
 }

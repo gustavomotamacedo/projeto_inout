@@ -58,7 +58,18 @@ public class AlunoDbHelper extends SQLiteOpenHelper { //TODO: REFATORAR TIPO DE 
                 COLUMN_HORA_SAIDA +" TIME DEFAULT NULL," +
                 COLUMN_TEMPO_PERMANENCIA +" TIME DEFAULT NULL," +
                 "FOREIGN KEY ("+ COLUMN_ID_EVENTO +") REFERENCES eventos(id));";
+
+        String trigger = "CREATE TRIGGER IF NOT EXISTS trigger_quantidade_alunos" +
+                "AFTER INSERT ON alunos" +
+                "FOR EACH ROW" +
+                "BEGIN" +
+                "    UPDATE "+ EventosDbHelper.getTableName() +
+                "    SET "+EventosDbHelper.getColumnQuantidadeAlunos()+" = "+EventosDbHelper.getColumnQuantidadeAlunos()+" + 1" +
+                "    WHERE id = NEW."+COLUMN_ID_EVENTO+";'" +
+                "END;";
+
         db.execSQL(query);
+        db.execSQL(trigger);
     }
 
     @Override
