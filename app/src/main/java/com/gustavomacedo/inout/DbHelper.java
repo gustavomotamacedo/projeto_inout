@@ -70,7 +70,7 @@ public class DbHelper extends SQLiteOpenHelper { //TODO: REFATORAR TIPO DE DATA 
                 EVENTOS_COLUMN_NOME + " VARCHAR(255) NOT NULL," +
                 EVENTOS_COLUMN_QUANTIDADE_ALUNOS + " INTEGER DEFAULT 0);";
 
-        String trigger = "CREATE TRIGGER trigger_quantidade_alunos " + "\n" +
+        String triggerIncrementaQuantidaDeAlunos = "CREATE TRIGGER trigger_incrementa_quantidade_alunos " + "\n" +
                 "AFTER INSERT ON " + ALUNOS_TABLE_NAME + "\n"+
                 "FOR EACH ROW \n" +
                 "BEGIN \n" +
@@ -79,15 +79,27 @@ public class DbHelper extends SQLiteOpenHelper { //TODO: REFATORAR TIPO DE DATA 
                 "    WHERE " + EVENTOS_COLUMN_ID + " = NEW." + ALUNOS_COLUMN_ID_EVENTO + ";\n" +
                 "END;";
 
+        String triggerDecrementaQuantidadeDeAlunos = "CREATE TRIGGER trigger_decrementa_quantidade_alunos " + "\n" +
+                "AFTER DELETE ON " + ALUNOS_TABLE_NAME + "\n" +
+                "FOR EACH ROW \n" +
+                "BEGIN \n" +
+                "    UPDATE " + EVENTOS_TABLE_NAME + "\n" +
+                "    SET " + EVENTOS_COLUMN_QUANTIDADE_ALUNOS + " = " + EVENTOS_COLUMN_QUANTIDADE_ALUNOS + " - 1 " + "\n" +
+                "    WHERE " + EVENTOS_COLUMN_ID + " = OLD." + ALUNOS_COLUMN_ID_EVENTO + ";\n" +
+                "END;";
+
         db.execSQL(queryEventos);
         db.execSQL(queryAlunos);
-        db.execSQL(trigger);
+        db.execSQL(triggerIncrementaQuantidaDeAlunos);
+        db.execSQL(triggerDecrementaQuantidadeDeAlunos);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + ALUNOS_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + EVENTOS_TABLE_NAME);
+        db.execSQL("DROP TRIGGER IF EXISTS trigger_decrementa_quantidade_alunos");
+        db.execSQL("DROP TRIGGER IF EXISTS trigger_incrementa_quantidade_alunos");
         onCreate(db);
     }
 

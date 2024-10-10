@@ -13,8 +13,8 @@ public class CsvFormat {
     private String nome;
     @CsvBindByName(column = "rgm")
     private String rgm;
-    @CsvBindByName(column = "codigo")
-    private String codigo;
+    @CsvBindByName(column = "id_evento")
+    private String idEvento;
     @CsvBindByName(column = "data")
     @CsvDate("yyyy-MM-dd")
     private Date data;
@@ -40,8 +40,8 @@ public class CsvFormat {
         return rgm;
     }
 
-    public String getCodigo() {
-        return codigo;
+    public String getIdEvento() {
+        return idEvento;
     }
 
     public Date getData() {
