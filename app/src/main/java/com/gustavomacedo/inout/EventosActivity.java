@@ -19,7 +19,7 @@ public class EventosActivity extends AppCompatActivity {
 
     private RecyclerView eventosView;
     private ArrayList<String> eventosId, eventosNome, eventosQtdAlunos;
-    private EventosDbHelper eventosDbHelper;
+    private DbHelper dbHelper;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -39,7 +39,7 @@ public class EventosActivity extends AppCompatActivity {
         eventosNome = new ArrayList<>();
         eventosQtdAlunos = new ArrayList<>();
 
-        eventosDbHelper = new EventosDbHelper(getApplicationContext());
+        dbHelper = new DbHelper(this);
 
         adicionarTodosDadosNosArrays();
 
@@ -53,7 +53,7 @@ public class EventosActivity extends AppCompatActivity {
     }
 
     public void adicionarTodosDadosNosArrays() {
-        Cursor cursor = eventosDbHelper.lerTodosOsDados();
+        Cursor cursor = dbHelper.lerTodosOsEventos();
         if (cursor == null) {
             Toast.makeText(this, "Não há dados", Toast.LENGTH_SHORT).show();
         } else {

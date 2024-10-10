@@ -38,7 +38,7 @@
             android:screenOrientation="fullSensor"
             android:stateNotNeeded="true"
             android:theme="@style/zxing_CaptureTheme"
-            tools:ignore="DiscouragedApi"></activity>
+            tools:ignore="DiscouragedApi" />
     </application>
 
 </manifest>

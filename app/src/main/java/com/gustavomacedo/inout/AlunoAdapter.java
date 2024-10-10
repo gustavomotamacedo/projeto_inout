@@ -16,7 +16,7 @@ public class AlunoAdapter extends RecyclerView.Adapter<AlunoAdapter.AlunoViewHol
     private Context context;
     private ArrayList alunosNome, alunosRGM, alunosData, alunosHoraEntrada, alunosHoraSaida, alunosEvento;
 
-    public AlunoAdapter(Context context, ArrayList alunosNome, ArrayList alunosRGM, ArrayList alunosData, ArrayList alunosHoraEntrada, ArrayList alunosHoraSaida, ArrayList alunosEvento) {
+    public AlunoAdapter(Context context, ArrayList alunosNome, ArrayList alunosRGM, ArrayList alunosEvento, ArrayList alunosData, ArrayList alunosHoraEntrada, ArrayList alunosHoraSaida) {
         this.context = context;
         this.alunosNome = alunosNome;
         this.alunosRGM = alunosRGM;
