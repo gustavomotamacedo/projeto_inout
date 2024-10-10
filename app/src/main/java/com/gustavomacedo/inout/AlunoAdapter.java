@@ -38,8 +38,8 @@ public class AlunoAdapter extends RecyclerView.Adapter<AlunoAdapter.AlunoViewHol
     public void onBindViewHolder(@NonNull AlunoAdapter.AlunoViewHolder holder, int position) {
         holder.alunoNome.setText(alunosNome.get(position).toString());
         holder.alunoRGM.setText(alunosRGM.get(position).toString());
+        holder.alunoEvento.setText(alunosEvento.get(position).toString());
         holder.alunoData.setText(alunosData.get(position) == null ? "" : alunosData.get(position).toString());
-        holder.alunoEvento.setText(alunosEvento.get(position) == null ? "" : alunosEvento.get(position).toString());
         holder.alunoHoraEntrada.setText(alunosHoraEntrada.get(position) == null ? "" : alunosHoraEntrada.get(position).toString());
         holder.alunoHoraSaida.setText(alunosHoraSaida.get(position) == null ? "" : alunosHoraSaida.get(position).toString());
     }

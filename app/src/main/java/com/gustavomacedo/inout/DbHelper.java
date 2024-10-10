@@ -156,16 +156,15 @@ public class DbHelper extends SQLiteOpenHelper { //TODO: REFATORAR TIPO DE DATA 
         return cursor;
     }
 
-    public Cursor pesquisarAlunoPorIdEvento(int idEvento) {
-
-        String query = "SELECT * FROM " + ALUNOS_TABLE_NAME + " WHERE " + ALUNOS_COLUMN_ID_EVENTO + "=" + idEvento;
+    public Cursor lerAlunoPorIdEvento(int idEvento) {
+        String query = "SELECT * FROM " + ALUNOS_TABLE_NAME + " WHERE " + ALUNOS_COLUMN_ID_EVENTO + "=?";
 
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = null;
 
         if (db != null) {
-            cursor = db.rawQuery(query, null);
+            cursor = db.rawQuery(query, new String[] {String.valueOf(idEvento)});
         }
 
         return cursor;
@@ -264,6 +263,19 @@ public class DbHelper extends SQLiteOpenHelper { //TODO: REFATORAR TIPO DE DATA 
 
     public Cursor lerTodosOsEventos() {
         String query = "SELECT * FROM " + EVENTOS_TABLE_NAME;
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = null;
+
+        if (db != null) {
+            cursor = db.rawQuery(query, null);
+        }
+
+        return cursor;
+    }
+
+    public Cursor lerEventoPorId(int id) {
+        String query = "SELECT * FROM " + EVENTOS_TABLE_NAME + " WHERE " + EVENTOS_COLUMN_ID + "=" + ALUNOS_COLUMN_ID_EVENTO;
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = null;
