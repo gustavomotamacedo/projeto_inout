@@ -1,8 +1,10 @@
 package com.gustavomacedo.inout;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -19,6 +21,7 @@ public class EventosActivity extends AppCompatActivity {
 
     private RecyclerView eventosView;
     private ArrayList<String> eventosId, eventosNome, eventosQtdAlunos;
+    private Button btnAddEvento;
     private DbHelper dbHelper;
 
     @SuppressLint("MissingInflatedId")
@@ -34,6 +37,7 @@ public class EventosActivity extends AppCompatActivity {
         });
 
         eventosView = findViewById(R.id.eventosView);
+        btnAddEvento = findViewById(R.id.btnAdcEvento);
 
         eventosId = new ArrayList<>();
         eventosNome = new ArrayList<>();
@@ -50,6 +54,12 @@ public class EventosActivity extends AppCompatActivity {
 
         eventosView.setAdapter(eventoAdapter);
         eventosView.setLayoutManager(new LinearLayoutManager(this));
+
+        btnAddEvento.setOnClickListener(v -> {
+            Intent in = new Intent(this, CreateEvento.class);
+            finish();
+            startActivity(in);
+        });
     }
 
     public void adicionarTodosDadosNosArrays() {

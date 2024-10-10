@@ -19,6 +19,9 @@
         android:theme="@style/Theme.InOut"
         tools:targetApi="31">
         <activity
+            android:name=".CreateEvento"
+            android:exported="false" />
+        <activity
             android:name=".EventosActivity"
             android:exported="false" />
         <activity
