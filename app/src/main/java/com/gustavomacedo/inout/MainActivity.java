@@ -2,24 +2,20 @@ package com.gustavomacedo.inout;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Button;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.recyclerview.widget.RecyclerView;
-
-import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    private RecyclerView alunosView;
-    private Button btnScan, btnCsv, btnExportar, btnLimpar;
-
-    private DbHelper dbHelper;
-    private ArrayList<String> alunosId, alunosNome, alunosRGM, alunosIdEvento, alunosData, alunosHoraEntrada, alunosHoraSaida;
+    private TextView txtInOut;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,8 +28,36 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        Intent in = new Intent(this, EventosActivity.class);
-        finish();
-        startActivity(in);
+        ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
+        actionBar.hide();
+
+        txtInOut = findViewById(R.id.txtInOut);
+
+        Animation anim = AnimationUtils.loadAnimation(this, R.anim.fade);
+
+        anim.reset();
+        txtInOut.clearAnimation();
+
+        txtInOut.setAnimation(anim);
+
+        anim.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                Intent in = new Intent(MainActivity.this, EventosActivity.class);
+                MainActivity.this.finish();
+                startActivity(in);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
     }
 }

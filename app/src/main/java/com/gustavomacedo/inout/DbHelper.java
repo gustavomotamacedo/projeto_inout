@@ -141,6 +141,22 @@ public class DbHelper extends SQLiteOpenHelper { //TODO: REFATORAR TIPO DE DATA 
             Toast.makeText(context, "Adicionado com sucesso", Toast.LENGTH_SHORT).show();
         }
     }
+
+    void adcAluno(String nome, int rgm, int idEvento) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(ALUNOS_COLUMN_NOME, nome);
+        cv.put(ALUNOS_COLUMN_RGM, rgm);
+        cv.put(ALUNOS_COLUMN_ID_EVENTO, idEvento);
+        cv.put(ALUNOS_COLUMN_DATA, String.valueOf(DateFormat.format("yyyy-MM-dd", new Date())));
+        long resultado = db.insert(ALUNOS_TABLE_NAME, null, cv);
+
+        if (resultado == -1){
+            Toast.makeText(context, "Falhou", Toast.LENGTH_SHORT).show();
+        }else{
+            Toast.makeText(context, "Adicionado com sucesso", Toast.LENGTH_SHORT).show();
+        }
+    }
     
     public Cursor lerTodosOsAlunos() {
 

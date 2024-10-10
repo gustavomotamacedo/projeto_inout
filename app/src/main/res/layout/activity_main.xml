@@ -7,60 +7,14 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/alunosView"
-        android:layout_width="409dp"
-        android:layout_height="729dp"
+    <TextView
+        android:id="@+id/txtInOut"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="InOut"
+        android:textSize="32dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/button3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:gravity="bottom|center"
-        android:onClick="mudarTela"
-        android:text="mudar"
-        app:layout_constraintBottom_toBottomOf="@+id/alunosView"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <Button
-        android:id="@+id/btnScan"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:text="Scan"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/btnCsv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:text="Ler CSV"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button3"
-        app:layout_constraintStart_toEndOf="@+id/btnScan" />
-
-    <Button
-        android:id="@+id/btnExportar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:text="Exportar"
-        app:layout_constraintBottom_toTopOf="@+id/btnScan"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/btnLimpar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:text="Limpar"
-        app:layout_constraintBottom_toTopOf="@+id/btnCsv"
-        app:layout_constraintStart_toEndOf="@+id/btnExportar" />
 </androidx.constraintlayout.widget.ConstraintLayout>
