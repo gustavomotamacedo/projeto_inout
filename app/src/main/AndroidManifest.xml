@@ -5,6 +5,7 @@
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
+
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application
@@ -18,6 +19,9 @@
         android:theme="@style/Theme.InOut"
         tools:targetApi="31">
         <activity
+            android:name=".EventosActivity"
+            android:exported="false" />
+        <activity
             android:name=".CreateAluno"
             android:exported="false" />
         <activity
@@ -29,12 +33,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".CaptureScreenActivity"
+        <activity
+            android:name=".CaptureScreenActivity"
             android:screenOrientation="fullSensor"
             android:stateNotNeeded="true"
             android:theme="@style/zxing_CaptureTheme"
-            tools:ignore="DiscouragedApi">
-        </activity>
+            tools:ignore="DiscouragedApi"></activity>
     </application>
 
 </manifest>

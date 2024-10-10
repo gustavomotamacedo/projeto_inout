@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private Button btnScan, btnCsv, btnExportar, btnLimpar;
 
     private AlunoDbHelper alunoDbHelper;
-    private ArrayList<String> alunosId, alunosNome, alunosRGM, alunosCodigo, alunosData, alunosHoraEntrada, alunosHoraSaida, alunosPermanencia;
+    private ArrayList<String> alunosId, alunosNome, alunosRGM, alunosIdEvento, alunosData, alunosHoraEntrada, alunosHoraSaida;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +52,10 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        Intent in = new Intent(this, EventosActivity.class);
+        finish();
+        startActivity(in);
+
         alunosView = findViewById(R.id.alunosView);
         btnScan = findViewById(R.id.btnScan);
         btnCsv = findViewById(R.id.btnCsv);
@@ -61,14 +65,14 @@ public class MainActivity extends AppCompatActivity {
         alunosId = new ArrayList<>();
         alunosNome = new ArrayList<>();
         alunosRGM = new ArrayList<>();
-        alunosCodigo = new ArrayList<>();
+        alunosIdEvento = new ArrayList<>();
         alunosData = new ArrayList<>();
         alunosHoraEntrada = new ArrayList<>();
         alunosHoraSaida = new ArrayList<>();
-        alunosPermanencia = new ArrayList<>();
 
         alunoDbHelper = new AlunoDbHelper(getApplicationContext());
 
+        alunoDbHelper.resetarTestes();
 
         adicionarTodosDadosNosArrays();
 
@@ -78,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
                 alunosData,
                 alunosHoraEntrada,
                 alunosHoraSaida,
-                alunosPermanencia);
+                alunosIdEvento);
 
         alunosView.setAdapter(adapter);
         alunosView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
@@ -157,20 +161,18 @@ public class MainActivity extends AppCompatActivity {
             alunosId.clear();
             alunosNome.clear();
             alunosRGM.clear();
-            alunosCodigo.clear();
+            alunosIdEvento.clear();
             alunosData.clear();
             alunosHoraEntrada.clear();
             alunosHoraSaida.clear();
-            alunosPermanencia.clear();
             while(cursor.moveToNext()) {
                 alunosId.add(cursor.getString(0));
                 alunosNome.add(cursor.getString(1));
                 alunosRGM.add(cursor.getString(2));
-                alunosCodigo.add(cursor.getString(3));
+                alunosIdEvento.add(cursor.getString(3));
                 alunosData.add(cursor.getString(4));
                 alunosHoraEntrada.add(cursor.getString(5));
                 alunosHoraSaida.add(cursor.getString(6));
-                alunosPermanencia.add(cursor.getString(7));
             }
         }
     }
@@ -184,11 +186,10 @@ public class MainActivity extends AppCompatActivity {
                 alunosId.add(cursor.getString(0));
                 alunosNome.add(cursor.getString(1));
                 alunosRGM.add(cursor.getString(2));
-                alunosCodigo.add(cursor.getString(3));
+                alunosIdEvento.add(cursor.getString(3));
                 alunosData.add(cursor.getString(4));
                 alunosHoraEntrada.add(cursor.getString(5));
                 alunosHoraSaida.add(cursor.getString(6));
-                alunosPermanencia.add(cursor.getString(7));
             }
         }
     }
@@ -204,16 +205,15 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 resetarArrays();
                 printWriter.write("");
-                printWriter.println("_id,nome,rgm,codigo,data,hr_entrada,hr_saida,hr_permanencia");
+                printWriter.println("_id,nome,rgm,id_evento,data,hr_entrada,hr_saida,hr_permanencia");
                 for (int i = 0; i < alunosId.size(); i++) {
                     printWriter.println(alunosId.get(i) + "," +
                             alunosNome.get(i) + "," +
                             alunosRGM.get(i) + "," +
-                            alunosCodigo.get(i) + "," +
+                            alunosIdEvento.get(i) + "," +
                             alunosData.get(i) + "," +
                             (alunosHoraEntrada.get(i) != null ? alunosHoraEntrada.get(i) : "") + "," +
-                            (alunosHoraSaida.get(i) != null ? alunosHoraSaida.get(i) : "") + "," +
-                            (alunosPermanencia.get(i) != null ? alunosPermanencia.get(i) : ""));
+                            (alunosHoraSaida.get(i) != null ? alunosHoraSaida.get(i) : ""));
                 }
                 printWriter.close();
                 Toast.makeText(this, "CSV EXPORTADO", Toast.LENGTH_SHORT).show();
