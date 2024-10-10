@@ -49,15 +49,15 @@ public class AlunoDbHelper extends SQLiteOpenHelper { //TODO: REFATORAR TIPO DE 
     @Override
     public void onCreate(SQLiteDatabase db) {
         String query = "CREATE TABLE "+ TABLE_NAME +" (" +
-                COLUMN_ID +" INTEGER PRIMARY KEY AUTOINCREMENT," +
+                COLUMN_ID +" INTEGER  PRIMARY KEY AUTOINCREMENT," +
                 COLUMN_NOME +" VARCHAR(255) NOT NULL," +
-                COLUMN_RGM +" INT NOT NULL," +
-                COLUMN_ID_EVENTO +" INT NOT NULL," +
+                COLUMN_RGM +" INTEGER  NOT NULL," +
+                COLUMN_ID_EVENTO +" INTEGER  NOT NULL," +
                 COLUMN_DATA +" DATE DEFAULT NULL," +
                 COLUMN_HORA_ENTRADA +" TIME DEFAULT NULL," +
                 COLUMN_HORA_SAIDA +" TIME DEFAULT NULL," +
                 COLUMN_TEMPO_PERMANENCIA +" TIME DEFAULT NULL," +
-                "FOREIGN KEY ("+ COLUMN_ID_EVENTO +") REFERENCES eventos(id));";
+                "FOREIGN KEY ("+ COLUMN_ID_EVENTO +") REFERENCES eventos("+EventosDbHelper.getColumnId()+"));";
 
         String trigger = "CREATE TRIGGER IF NOT EXISTS trigger_quantidade_alunos" +
                 "AFTER INSERT ON alunos" +

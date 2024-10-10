@@ -1,12 +1,14 @@
 package com.gustavomacedo.inout;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -36,6 +38,11 @@ public class EventoAdapter extends RecyclerView.Adapter<EventoAdapter.EventoView
         holder.eventoId.setText(eventosId.get(position).toString());
         holder.eventoNome.setText(eventosNome.get(position).toString());
         holder.eventoQtdAlunos.setText(eventosQtdAlunos.get(position).toString());
+        holder.mainLayout.setOnClickListener(v -> {
+            Intent in = new Intent(context, CreateAluno.class);
+            in.putExtra("id_evento", String.valueOf(eventosId.get(position)));
+            context.startActivity(in);
+        });
     }
 
     @Override
@@ -45,6 +52,7 @@ public class EventoAdapter extends RecyclerView.Adapter<EventoAdapter.EventoView
 
     public class EventoViewHolder extends RecyclerView.ViewHolder {
 
+        ConstraintLayout mainLayout;
         TextView eventoId, eventoNome, eventoQtdAlunos;
 
         public EventoViewHolder(@NonNull View itemView) {
@@ -52,6 +60,7 @@ public class EventoAdapter extends RecyclerView.Adapter<EventoAdapter.EventoView
             eventoId = itemView.findViewById(R.id.eventoId);
             eventoNome = itemView.findViewById(R.id.eventoNome);
             eventoQtdAlunos = itemView.findViewById(R.id.eventoQtdAlunos);
+            mainLayout = itemView.findViewById(R.id.mainLayout);
         }
     }
 }
