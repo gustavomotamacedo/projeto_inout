@@ -39,9 +39,15 @@ public class EventoAdapter extends RecyclerView.Adapter<EventoAdapter.EventoView
         holder.eventoNome.setText(eventosNome.get(position).toString());
         holder.eventoQtdAlunos.setText(eventosQtdAlunos.get(position).toString());
         holder.mainLayout.setOnClickListener(v -> {
-            Intent in = new Intent(context, CreateAluno.class);
-            in.putExtra("id_evento", String.valueOf(eventosId.get(position)));
-            context.startActivity(in);
+            if (Integer.parseInt(holder.eventoQtdAlunos.getText().toString()) != 0){
+                Intent in = new Intent(context, AlunosActivity.class);
+                in.putExtra("id_evento", String.valueOf(eventosId.get(position)));
+                context.startActivity(in);
+            } else {
+                Intent in = new Intent(context, CreateAluno.class);
+                in.putExtra("id_evento", String.valueOf(eventosId.get(position)));
+                context.startActivity(in);
+            }
         });
     }
 

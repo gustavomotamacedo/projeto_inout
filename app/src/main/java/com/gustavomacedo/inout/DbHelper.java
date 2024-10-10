@@ -177,7 +177,7 @@ public class DbHelper extends SQLiteOpenHelper { //TODO: REFATORAR TIPO DE DATA 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @SuppressLint({"Range", "Recycle"})
-    public void atualizarEntradaESaidaDoAluno(String codigo) {
+    public void atualizarEntradaESaidaDoAluno(String rgm) {
         SQLiteDatabase dbWrite = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         String hourFormat = "hh:mm:ss";
@@ -190,13 +190,13 @@ public class DbHelper extends SQLiteOpenHelper { //TODO: REFATORAR TIPO DE DATA 
 
         if (dbWrite != null) {
             cv.put(ALUNOS_COLUMN_HORA_ENTRADA, (String) DateFormat.format(hourFormat, now));
-            result = dbWrite.update(ALUNOS_TABLE_NAME, cv, ALUNOS_COLUMN_ID_EVENTO + "=? and " + ALUNOS_COLUMN_HORA_ENTRADA + " IS NULL", new String[]{codigo});
+            result = dbWrite.update(ALUNOS_TABLE_NAME, cv, ALUNOS_COLUMN_RGM + "=? and " + ALUNOS_COLUMN_HORA_ENTRADA + " IS NULL", new String[]{rgm});
             if (result == 0) {
                 cv.clear();
                 cv.put(ALUNOS_COLUMN_HORA_SAIDA, (String) DateFormat.format(hourFormat, now));
-                result = dbWrite.update(ALUNOS_TABLE_NAME, cv, ALUNOS_COLUMN_ID_EVENTO + "=? and " + ALUNOS_COLUMN_HORA_SAIDA + " IS NULL", new String[]{codigo});
+                result = dbWrite.update(ALUNOS_TABLE_NAME, cv, ALUNOS_COLUMN_RGM + "=? and " + ALUNOS_COLUMN_HORA_SAIDA + " IS NULL", new String[]{rgm});
                 cv.clear();
-                line = dbWrite.rawQuery("SELECT "+ ALUNOS_COLUMN_HORA_ENTRADA + ", " + ALUNOS_COLUMN_HORA_SAIDA +" FROM " + ALUNOS_TABLE_NAME + " WHERE " + ALUNOS_COLUMN_ID_EVENTO + "=?", new String[]{codigo});
+                line = dbWrite.rawQuery("SELECT "+ ALUNOS_COLUMN_HORA_ENTRADA + ", " + ALUNOS_COLUMN_HORA_SAIDA +" FROM " + ALUNOS_TABLE_NAME + " WHERE " + ALUNOS_COLUMN_RGM + "=?", new String[]{rgm});
                 line.moveToFirst();
                 try {
                     DateTimeFormatter formatterExpecificoParaEssaConta = DateTimeFormatter.ofPattern("HH:mm:ss");
@@ -215,7 +215,7 @@ public class DbHelper extends SQLiteOpenHelper { //TODO: REFATORAR TIPO DE DATA 
                     String strDiff = diferencaFormatada.format(formatterExpecificoParaEssaConta);
 
                     cv.put(ALUNOS_COLUMN_TEMPO_PERMANENCIA, strDiff);
-                    result = dbWrite.update(ALUNOS_TABLE_NAME, cv, ALUNOS_COLUMN_ID_EVENTO + "=?", new String[]{codigo});
+                    result = dbWrite.update(ALUNOS_TABLE_NAME, cv, ALUNOS_COLUMN_RGM + "=?", new String[]{rgm});
                 } catch (Exception e) {
                     Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
                     Log.e("BUCETA", Arrays.toString(e.getStackTrace()));
