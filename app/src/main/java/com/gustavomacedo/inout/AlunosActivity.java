@@ -1,10 +1,18 @@
 package com.gustavomacedo.inout;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -12,13 +20,21 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
+import com.journeyapps.barcodescanner.ScanContract;
+import com.journeyapps.barcodescanner.ScanOptions;
 
+import java.util.ArrayList;
+import java.util.Objects;
+
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class AlunosActivity extends AppCompatActivity {
 
     private RecyclerView alunosView;
-    private DbHelper myDb;
+    private Button btnScan;
+    private DbHelper dbHelper;
     private int idEvento;
+    private Intent in;
+    private Handler handler;
 
     private ArrayList<String> alunoNome, alunoRgm, alunoData, alunoHoraEntrada, alunoHoraSaida, alunoEvento;
 
@@ -41,10 +57,13 @@ public class AlunosActivity extends AppCompatActivity {
         alunoHoraSaida = new ArrayList<>();
 
         alunosView = findViewById(R.id.alunosView);
+        btnScan = findViewById(R.id.btnScan);
 
-        idEvento = Integer.parseInt(getIntent().getStringExtra("_id_evento").trim());
+        in = getIntent();
 
-        myDb = new DbHelper(this);
+        idEvento = Integer.parseInt(Objects.requireNonNull(in.getStringExtra("_id_evento")));
+
+        dbHelper = new DbHelper(this);
 
         inserirAlunosNosArrays();
 
@@ -52,10 +71,14 @@ public class AlunosActivity extends AppCompatActivity {
 
         alunosView.setAdapter(alunoAdapter);
         alunosView.setLayoutManager(new LinearLayoutManager(this));
+
+        btnScan.setOnClickListener(v -> {
+            scanCode();
+        });
     }
 
     private void inserirAlunosNosArrays() {
-        Cursor cursor = myDb.lerAlunoPorIdEvento(idEvento);
+        Cursor cursor = dbHelper.lerAlunoPorIdEvento(idEvento);
         if (cursor == null) {
             Toast.makeText(this, "Não há dados", Toast.LENGTH_SHORT).show();
         } else {
@@ -69,4 +92,36 @@ public class AlunosActivity extends AppCompatActivity {
             }
         }
     }
+
+    public void scanCode() {
+        ScanOptions scanOptions = new ScanOptions();
+        scanOptions.setPrompt("Volume para cima para ligar o flash");
+        scanOptions.setBeepEnabled(true);
+        scanOptions.setOrientationLocked(true);
+        scanOptions.setCaptureActivity(CaptureScreenActivity.class);
+        barLauncher.launch(scanOptions);
+    }
+
+    ActivityResultLauncher<ScanOptions> barLauncher = registerForActivityResult(new ScanContract(), result -> {
+        if (result.getContents() != null) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(AlunosActivity.this);
+            builder.setTitle("Codigo do aluno");
+            builder.setMessage(result.getContents());
+            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    recreate();
+                    dialog.dismiss();
+                }
+            }).show();
+
+            String[] alunoInfo = result.getContents().split(",");
+            boolean resultado = false;
+            resultado = dbHelper.atualizarEntradaESaidaDoAluno(alunoInfo[1]);
+            if (!resultado) {
+                    dbHelper.adcAluno(alunoInfo[0], Integer.parseInt(alunoInfo[1]), in.getStringExtra("_id_evento"));
+                    dbHelper.atualizarEntradaESaidaDoAluno(alunoInfo[1]);
+                }
+            }
+    });
 }

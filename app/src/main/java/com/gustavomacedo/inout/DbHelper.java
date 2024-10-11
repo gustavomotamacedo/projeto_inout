@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -140,12 +141,12 @@ public class DbHelper extends SQLiteOpenHelper {
         }
     }
 
-    void adcAluno(String nome, int rgm, int idEvento) {
+    void adcAluno(String nome, int rgm, String idEvento) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(ALUNOS_COLUMN_NOME, nome);
         cv.put(ALUNOS_COLUMN_RGM, rgm);
-        cv.put(ALUNOS_COLUMN_ID_EVENTO, idEvento);
+        cv.put(ALUNOS_COLUMN_ID_EVENTO, Integer.parseInt(idEvento));
         cv.put(ALUNOS_COLUMN_DATA, String.valueOf(DateFormat.format("yyyy-MM-dd", new Date())));
         long resultado = db.insert(ALUNOS_TABLE_NAME, null, cv);
 
@@ -231,6 +232,7 @@ public class DbHelper extends SQLiteOpenHelper {
                     result = dbWrite.update(ALUNOS_TABLE_NAME, cv, ALUNOS_COLUMN_RGM + "=?", new String[]{rgm});
                 } catch (Exception e) {
                     Toast.makeText(context, "Aluno não cadastrado", Toast.LENGTH_SHORT).show();
+                    Log.d("CARALHO", String.valueOf(result));
                     return false;
                 }
             }
@@ -239,9 +241,6 @@ public class DbHelper extends SQLiteOpenHelper {
         if (result == -1) {
             Toast.makeText(context, "Aluno não cadastrado", Toast.LENGTH_SHORT).show();
             return false;
-        } else if (result > 0){
-            Toast.makeText(context, "Nenhuma linha alterada", Toast.LENGTH_SHORT).show();
-            return true;
         } else {
             Toast.makeText(context, "Horario atualizado", Toast.LENGTH_SHORT).show();
             return true;
