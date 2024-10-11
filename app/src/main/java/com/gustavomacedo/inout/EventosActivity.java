@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -130,9 +129,6 @@ public class EventosActivity extends AppCompatActivity {
             }).show();
 
             String[] alunoInfo = result.getContents().split(",");
-            Log.d("PORRA", alunoInfo[0]);
-            Log.d("PORRA", alunoInfo[1]);
-            Log.d("PORRA", alunoInfo[2]);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 dbHelper.atualizarEntradaESaidaDoAluno(alunoInfo[1]);
             }

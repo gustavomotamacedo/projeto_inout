@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -18,10 +17,9 @@ import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.Date;
 
-public class DbHelper extends SQLiteOpenHelper { //TODO: REFATORAR TIPO DE DATA PARA LOCALDATETIME
+public class DbHelper extends SQLiteOpenHelper {
 
     private Context context;
 
@@ -192,7 +190,7 @@ public class DbHelper extends SQLiteOpenHelper { //TODO: REFATORAR TIPO DE DATA 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @SuppressLint({"Range", "Recycle"})
-    public void atualizarEntradaESaidaDoAluno(String rgm) {
+    public boolean atualizarEntradaESaidaDoAluno(String rgm) {
         SQLiteDatabase dbWrite = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         String hourFormat = "hh:mm:ss";
@@ -232,14 +230,21 @@ public class DbHelper extends SQLiteOpenHelper { //TODO: REFATORAR TIPO DE DATA 
                     cv.put(ALUNOS_COLUMN_TEMPO_PERMANENCIA, strDiff);
                     result = dbWrite.update(ALUNOS_TABLE_NAME, cv, ALUNOS_COLUMN_RGM + "=?", new String[]{rgm});
                 } catch (Exception e) {
-                    Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
-                    Log.e("BUCETA", Arrays.toString(e.getStackTrace()));
+                    Toast.makeText(context, "Aluno não cadastrado", Toast.LENGTH_SHORT).show();
+                    return false;
                 }
             }
         }
 
         if (result == -1) {
-            Toast.makeText(context, "Deu ruim aqui", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Aluno não cadastrado", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (result > 0){
+            Toast.makeText(context, "Nenhuma linha alterada", Toast.LENGTH_SHORT).show();
+            return true;
+        } else {
+            Toast.makeText(context, "Horario atualizado", Toast.LENGTH_SHORT).show();
+            return true;
         }
         
     }
