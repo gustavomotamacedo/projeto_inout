@@ -5,7 +5,7 @@ import com.opencsv.bean.CsvDate;
 
 import java.util.Date;
 
-public class CsvFormat {
+public class AlunoBean {
 
     @CsvBindByName(column = "_id")
     private String id;
