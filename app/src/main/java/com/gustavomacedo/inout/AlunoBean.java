@@ -1,5 +1,7 @@
 package com.gustavomacedo.inout;
 
+import androidx.annotation.NonNull;
+
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvDate;
 
@@ -27,6 +29,19 @@ public class AlunoBean {
     @CsvBindByName(column = "hr_permanencia")
     @CsvDate("hh:mm:ss")
     private Date permanencia;
+
+    public AlunoBean(String id, String nome, String rgm, String idEvento, Date data, Date entrada, Date saida, Date permanencia) {
+        this.id = id;
+        this.nome = nome;
+        this.rgm = rgm;
+        this.idEvento = idEvento;
+        this.data = data;
+        this.entrada = entrada;
+        this.saida = saida;
+        this.permanencia = permanencia;
+    }
+
+    public AlunoBean() {}
 
     public String getId() {
         return id;
@@ -58,5 +73,20 @@ public class AlunoBean {
 
     public Date getPermanencia() {
         return permanencia;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "AlunoBean{" +
+                "id='" + id + '\'' +
+                ", nome='" + nome + '\'' +
+                ", rgm='" + rgm + '\'' +
+                ", idEvento='" + idEvento + '\'' +
+                ", data=" + data +
+                ", entrada=" + entrada +
+                ", saida=" + saida +
+                ", permanencia=" + permanencia +
+                '}';
     }
 }
