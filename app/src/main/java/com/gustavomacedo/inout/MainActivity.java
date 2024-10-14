@@ -17,8 +17,10 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.opencsv.bean.CsvToBeanBuilder;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -47,9 +49,15 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             //noinspection unchecked,rawtypes
-            alunoBeanList = new CsvToBeanBuilder(new FileReader(CSV_PATH_ALUNOS)).withType(AlunoBean.class).build().parse();
+            alunoBeanList = new CsvToBeanBuilder(new InputStreamReader(new FileInputStream(CSV_PATH_ALUNOS), StandardCharsets.ISO_8859_1))
+                    .withType(AlunoBean.class)
+                    .build()
+                    .parse();
             //noinspection unchecked,rawtypes
-            eventoBeanList = new CsvToBeanBuilder(new FileReader(CSV_PATH_EVENTOS)).withType(EventoBean.class).build().parse();
+            eventoBeanList = new CsvToBeanBuilder(new InputStreamReader(new FileInputStream(CSV_PATH_EVENTOS), StandardCharsets.ISO_8859_1))
+                    .withType(EventoBean.class)
+                    .build()
+                    .parse();
 
             dbHelper = new DbHelper(this);
 
