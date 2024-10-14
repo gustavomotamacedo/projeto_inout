@@ -185,7 +185,19 @@ public class DbHelper extends SQLiteOpenHelper {
         return cursor;
     }
     // TODO : Função para retornar dados por nome
-    // TODO : Função para retornar dados por rgm
+    public Cursor lerAlunoPorRGM(int rgm) {
+        String query = "SELECT * FROM " + ALUNOS_TABLE_NAME + " WHERE " + ALUNOS_COLUMN_RGM + "=?";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = null;
+
+        if (db != null) {
+            cursor = db.rawQuery(query, new String[] {String.valueOf(rgm)});
+        }
+
+        return cursor;
+    }
     // TODO : Função para atualizar os dados
     // TODO : Função para deletar os dados
 

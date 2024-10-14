@@ -3,9 +3,11 @@ package com.gustavomacedo.inout;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.CursorIndexOutOfBoundsException;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -24,6 +26,7 @@ import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Objects;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
@@ -37,6 +40,8 @@ public class AlunosActivity extends AppCompatActivity {
     private Handler handler;
 
     private ArrayList<String> alunoNome, alunoRgm, alunoData, alunoHoraEntrada, alunoHoraSaida, alunoEvento;
+
+    private static int RGM;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,24 +109,49 @@ public class AlunosActivity extends AppCompatActivity {
 
     ActivityResultLauncher<ScanOptions> barLauncher = registerForActivityResult(new ScanContract(), result -> {
         if (result.getContents() != null) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(AlunosActivity.this);
-            builder.setTitle("Codigo do aluno");
-            builder.setMessage(result.getContents());
-            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    recreate();
-                    dialog.dismiss();
-                }
-            }).show();
 
             String[] alunoInfo = result.getContents().split(",");
             boolean resultado = false;
-            resultado = dbHelper.atualizarEntradaESaidaDoAluno(alunoInfo[1]);
-            if (!resultado) {
-                    dbHelper.adcAluno(alunoInfo[0], Integer.parseInt(alunoInfo[1]), in.getStringExtra("_id_evento"));
+
+            Cursor aluno = dbHelper.lerAlunoPorRGM(Integer.parseInt(alunoInfo[1]));
+
+            try {
+                aluno.moveToNext();
+                if (aluno.getString(3).equals(in.getStringExtra("_id_evento"))) {
                     dbHelper.atualizarEntradaESaidaDoAluno(alunoInfo[1]);
+                    recreate();
+                } else {
+                    Toast.makeText(this, "Alunos cadastrado em outro evento", Toast.LENGTH_SHORT).show();
                 }
+            } catch (CursorIndexOutOfBoundsException e){
+                Log.d("PUNHETINHA", e.getMessage());
+                AlertDialog.Builder builder = getBuilder(alunoInfo[0], alunoInfo[1], in.getStringExtra("_id_evento"));
+                builder.show();
             }
+        }
+
     });
+
+    private AlertDialog.Builder getBuilder(String nome, String rgm, String idEvento) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(AlunosActivity.this);
+        builder.setTitle("Cadastrar aluno no evento atual?");
+        builder.setMessage("Aluno não cadastrado!\nDeseja cadastra-lo no evento atual?");
+        builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                recreate();
+                dialogInterface.dismiss();
+                dbHelper.adcAluno(nome, Integer.parseInt(rgm), Integer.parseInt(idEvento), new Date());
+            }
+        });
+        builder.setNegativeButton("Não", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                recreate();
+                dialogInterface.dismiss();
+                Toast.makeText(AlunosActivity.this, "Aluno não criado.", Toast.LENGTH_SHORT).show();
+            }
+        });
+        return builder;
+    }
 }
