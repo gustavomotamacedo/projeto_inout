@@ -1,4 +1,4 @@
-package com.gustavomacedo.inout;
+package com.gustavomacedo.inout.controller;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +10,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.gustavomacedo.inout.R;
+import com.gustavomacedo.inout.view.AlunosActivity;
 
 import java.util.ArrayList;
 

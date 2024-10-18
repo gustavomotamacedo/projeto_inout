@@ -1,4 +1,4 @@
-package com.gustavomacedo.inout;
+package com.gustavomacedo.inout.view;
 
 import com.journeyapps.barcodescanner.CaptureActivity;
 

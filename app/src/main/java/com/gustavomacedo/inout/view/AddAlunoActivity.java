@@ -1,4 +1,4 @@
-package com.gustavomacedo.inout;
+package com.gustavomacedo.inout.view;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,10 +11,13 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.gustavomacedo.inout.R;
+import com.gustavomacedo.inout.model.DbHelper;
+
 import java.util.Date;
 
 
-public class CreateAluno extends AppCompatActivity {
+public class AddAlunoActivity extends AppCompatActivity {
 
     private EditText nome,rgm, idEvento;
     private Button addButton;
@@ -44,7 +47,7 @@ public class CreateAluno extends AppCompatActivity {
                     Integer.parseInt(rgm.getText().toString()),
                     Integer.parseInt(idEvento.getText().toString()),
                     new Date());
-            Intent in = new Intent(CreateAluno.this, EventosActivity.class);
+            Intent in = new Intent(AddAlunoActivity.this, EventosActivity.class);
             startActivity(in);
         });
 

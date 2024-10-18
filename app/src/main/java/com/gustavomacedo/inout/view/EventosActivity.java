@@ -1,4 +1,4 @@
-package com.gustavomacedo.inout;
+package com.gustavomacedo.inout.view;
 
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
@@ -19,6 +19,9 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.gustavomacedo.inout.controller.EventoAdapter;
+import com.gustavomacedo.inout.R;
+import com.gustavomacedo.inout.model.DbHelper;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 import com.opencsv.CSVWriter;
@@ -83,7 +86,7 @@ public class EventosActivity extends AppCompatActivity {
         eventosView.setLayoutManager(new LinearLayoutManager(this));
 
         btnAddEvento.setOnClickListener(v -> {
-            Intent in = new Intent(this, CreateEvento.class);
+            Intent in = new Intent(this, AddEventoActivity.class);
             finish();
             startActivity(in);
         });

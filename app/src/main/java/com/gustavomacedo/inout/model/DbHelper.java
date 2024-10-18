@@ -1,4 +1,4 @@
-package com.gustavomacedo.inout;
+package com.gustavomacedo.inout.model;
 
 import android.annotation.SuppressLint;
 import android.content.ContentValues;

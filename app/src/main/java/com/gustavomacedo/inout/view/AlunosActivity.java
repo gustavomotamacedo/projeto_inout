@@ -1,4 +1,4 @@
-package com.gustavomacedo.inout;
+package com.gustavomacedo.inout.view;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -22,6 +22,9 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.gustavomacedo.inout.controller.AlunoAdapter;
+import com.gustavomacedo.inout.R;
+import com.gustavomacedo.inout.model.DbHelper;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 

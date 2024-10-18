@@ -1,4 +1,4 @@
-package com.gustavomacedo.inout;
+package com.gustavomacedo.inout.view;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -15,6 +15,10 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.gustavomacedo.inout.R;
+import com.gustavomacedo.inout.model.AlunoBean;
+import com.gustavomacedo.inout.model.DbHelper;
+import com.gustavomacedo.inout.model.EventoBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 
 import java.io.FileInputStream;

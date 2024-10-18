@@ -1,4 +1,4 @@
-package com.gustavomacedo.inout;
+package com.gustavomacedo.inout.view;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,7 +11,10 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-public class CreateEvento extends AppCompatActivity {
+import com.gustavomacedo.inout.R;
+import com.gustavomacedo.inout.model.DbHelper;
+
+public class AddEventoActivity extends AppCompatActivity {
 
     private EditText edtEventoNome;
     private Button btnAdcEvento;
