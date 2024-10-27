@@ -1,6 +1,7 @@
 package com.gustavomacedo.inout.model;
 
 import com.opencsv.bean.CsvBindByName;
+import com.opencsv.bean.CsvDate;
 
 public class EventoBean {
 
@@ -9,6 +10,7 @@ public class EventoBean {
     @CsvBindByName(column = "nome")
     private String nome;
     @CsvBindByName(column = "data_hora")
+    @CsvDate("HH:mm:ss")
     private String dataHora;
 
     public EventoBean(String id, String nome, String dataHora) {
