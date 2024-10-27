@@ -241,6 +241,21 @@ public class DbHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
+    public Integer quantidadeDeAlunosEmUmEvento(String eventoId) {
+        String query = "SELECT COUNT(*) AS quantidade_alunos " +
+                "FROM "+ALUNOS_EVENTOS_TABLE_NAME+" " +
+                "WHERE "+ALUNOS_EVENTOS_COLUMN_EVENTO_ID+" = ?;";
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = null;
+
+        if (db != null) {
+            cursor = db.rawQuery(query, new String[]{eventoId});
+        }
+
+        return 0;
+    }
+
     // @Param : int id
     public Cursor lerEventoPorId(int id) {
         String query = "SELECT * FROM " + EVENTOS_TABLE_NAME + " WHERE " + EVENTOS_COLUMN_ID + "= ?;";
