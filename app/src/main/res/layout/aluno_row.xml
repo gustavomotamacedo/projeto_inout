@@ -40,18 +40,6 @@
                 app:layout_constraintTop_toBottomOf="@+id/alunoNome" />
 
             <TextView
-                android:id="@+id/alunoData"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="4dp"
-                android:text="alunoData"
-                android:textColor="@color/black"
-                android:textSize="16sp"
-                app:layout_constraintBottom_toBottomOf="@+id/alunoNome"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/alunoNome" />
-
-            <TextView
                 android:id="@+id/alunoHoraEntrada"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -59,18 +47,7 @@
                 android:textColor="@color/black"
                 android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/alunoData" />
-
-            <TextView
-                android:id="@+id/alunoHoraSaida"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="alunoHoraSaida"
-                android:textColor="@color/black"
-                android:textSize="14sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/alunoHoraEntrada" />
+                app:layout_constraintTop_toTopOf="@+id/alunoNome" />
 
             <TextView
                 android:id="@+id/alunoEvento"

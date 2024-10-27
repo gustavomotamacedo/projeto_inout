@@ -16,15 +16,13 @@ import java.util.ArrayList;
 public class AlunoAdapter extends RecyclerView.Adapter<AlunoAdapter.AlunoViewHolder> {
 
     private Context context;
-    private ArrayList alunosNome, alunosRGM, alunosData, alunosHoraEntrada, alunosHoraSaida, alunosEvento;
+    private ArrayList alunosNome, alunosRGM, alunosHoraEntrada, alunosEvento;
 
-    public AlunoAdapter(Context context, ArrayList alunosNome, ArrayList alunosRGM, ArrayList alunosEvento, ArrayList alunosData, ArrayList alunosHoraEntrada, ArrayList alunosHoraSaida) {
+    public AlunoAdapter(Context context, ArrayList alunosNome, ArrayList alunosRGM, ArrayList alunosEvento, ArrayList alunosHoraEntrada) {
         this.context = context;
         this.alunosNome = alunosNome;
         this.alunosRGM = alunosRGM;
-        this.alunosData = alunosData;
         this.alunosHoraEntrada = alunosHoraEntrada;
-        this.alunosHoraSaida = alunosHoraSaida;
         this.alunosEvento = alunosEvento;
     }
 
@@ -41,9 +39,7 @@ public class AlunoAdapter extends RecyclerView.Adapter<AlunoAdapter.AlunoViewHol
         holder.alunoNome.setText(alunosNome.get(position).toString());
         holder.alunoRGM.setText(alunosRGM.get(position).toString());
         holder.alunoEvento.setText(alunosEvento.get(position).toString());
-        holder.alunoData.setText(alunosData.get(position) == null ? "" : alunosData.get(position).toString());
         holder.alunoHoraEntrada.setText(alunosHoraEntrada.get(position) == null ? "" : alunosHoraEntrada.get(position).toString());
-        holder.alunoHoraSaida.setText(alunosHoraSaida.get(position) == null ? "" : alunosHoraSaida.get(position).toString());
     }
 
     @Override
@@ -53,16 +49,14 @@ public class AlunoAdapter extends RecyclerView.Adapter<AlunoAdapter.AlunoViewHol
 
     public class AlunoViewHolder extends RecyclerView.ViewHolder {
 
-        TextView alunoNome, alunoRGM, alunoEvento, alunoData, alunoHoraEntrada, alunoHoraSaida;
+        TextView alunoNome, alunoRGM, alunoEvento, alunoHoraEntrada;
 
         public AlunoViewHolder(@NonNull View itemView) {
             super(itemView);
             alunoNome = itemView.findViewById(R.id.alunoNome);
             alunoRGM = itemView.findViewById(R.id.alunoRgm);
             alunoEvento = itemView.findViewById(R.id.alunoEvento);
-            alunoData = itemView.findViewById(R.id.alunoData);
             alunoHoraEntrada = itemView.findViewById(R.id.alunoHoraEntrada);
-            alunoHoraSaida = itemView.findViewById(R.id.alunoHoraSaida);
         }
     }
 }
