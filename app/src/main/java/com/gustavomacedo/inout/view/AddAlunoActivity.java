@@ -43,7 +43,7 @@ public class AddAlunoActivity extends AppCompatActivity {
         myDB = new DbHelper(this);
 
         addButton.setOnClickListener(v -> {
-            myDB.adcAluno(nome.getText().toString(),
+            myDB.addAluno(nome.getText().toString(),
                     Integer.parseInt(rgm.getText().toString()),
                     Integer.parseInt(idEvento.getText().toString()),
                     new Date());

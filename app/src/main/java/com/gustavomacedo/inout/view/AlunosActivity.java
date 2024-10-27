@@ -144,7 +144,7 @@ public class AlunosActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialogInterface, int i) {
                 recreate();
                 dialogInterface.dismiss();
-                dbHelper.adcAluno(nome, Integer.parseInt(rgm), Integer.parseInt(idEvento), new Date());
+                dbHelper.addAluno(nome, Integer.parseInt(rgm), Integer.parseInt(idEvento), new Date());
             }
         });
         builder.setNegativeButton("Não", new DialogInterface.OnClickListener() {

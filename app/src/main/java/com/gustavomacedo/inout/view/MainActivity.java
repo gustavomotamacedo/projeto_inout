@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
             if (eventos.getCount() == 0) {
                 // Tabela de eventos vazia
                 for (int i = 0; i < eventoBeanList.size(); i++) {
-                    dbHelper.adcEvento(eventoBeanList.get(i).getNome());
+                    dbHelper.addEvento(eventoBeanList.get(i).getNome());
                 }
             }
             else {
@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
                 // Tabela de alunos vazia
                 for (int i = 0; i < alunoBeanList.size(); i++) {
                     AlunoBean alunoAux = alunoBeanList.get(i);
-                    dbHelper.adcAluno(alunoAux.getNome(), Integer.parseInt(alunoAux.getRgm()), Integer.parseInt(alunoAux.getIdEvento()), alunoAux.getData());
+                    dbHelper.addAluno(alunoAux.getNome(), Integer.parseInt(alunoAux.getRgm()), Integer.parseInt(alunoAux.getIdEvento()), alunoAux.getData());
                 }
             } else {
                 // Tabela de alunos com valores

@@ -38,7 +38,7 @@ public class AddEventoActivity extends AppCompatActivity {
         myDb = new DbHelper(this);
 
         btnAdcEvento.setOnClickListener(v -> {
-            myDb.adcEvento(edtEventoNome.getText().toString());
+            myDb.addEvento(edtEventoNome.getText().toString());
             Intent in = new Intent(this, EventosActivity.class);
             finish();
             startActivity(in);

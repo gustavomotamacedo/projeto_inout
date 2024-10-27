@@ -8,19 +8,24 @@ public class EventoBean {
     private String id;
     @CsvBindByName(column = "nome")
     private String nome;
-    @CsvBindByName(column = "qtd_alunos")
-    private String qtdAlunos;
+    @CsvBindByName(column = "data_hora")
+    private String dataHora;
 
-    public EventoBean(String id, String nome, String qtdAlunos) {
+    public EventoBean(String id, String nome, String dataHora) {
         this.id = id;
         this.nome = nome;
-        this.qtdAlunos = qtdAlunos;
+        this.dataHora = dataHora;
     }
-    public EventoBean() {}
 
-    public String getId() { return id; }
+    public String getId() {
+        return id;
+    }
 
-    public String getNome() { return nome; }
+    public String getNome() {
+        return nome;
+    }
 
-    public String getQtdAlunos() { return qtdAlunos; }
+    public String getDataHora() {
+        return dataHora;
+    }
 }
