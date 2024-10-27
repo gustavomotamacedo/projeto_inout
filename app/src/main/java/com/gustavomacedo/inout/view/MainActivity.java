@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
 
         txtInOut = findViewById(R.id.txtInOut);
 
-        Animation anim = AnimationUtils.loadAnimation(this, R.anim.fade);
+        Animation anim = AnimationUtils.loadAnimation   (this, R.anim.fade);
 
         anim.reset();
         txtInOut.clearAnimation();

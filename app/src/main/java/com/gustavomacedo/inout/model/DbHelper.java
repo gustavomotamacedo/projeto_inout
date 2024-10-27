@@ -25,72 +25,58 @@ public class DbHelper extends SQLiteOpenHelper {
     private Context context;
 
     private static final String DATABASE_NAME = "InOut.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 1;
 
+    // armazenando nomes das tabelas em constantes
     private static final String ALUNOS_TABLE_NAME = "alunos";
     private static final String EVENTOS_TABLE_NAME = "eventos";
+    private static final String ALUNOS_EVENTOS_TABLE_NAME = "alunos_eventos"; // tabela associativa
 
     // definindo as colunas da tabela de alunos como constantes
-    private static final String ALUNOS_COLUMN_ID = "_id";
-    private static final String ALUNOS_COLUMN_NOME = "nome";
+    private static final String ALUNOS_COLUMN_ID = "_id"; // chave primaria
     private static final String ALUNOS_COLUMN_RGM = "rgm";
-    private static final String ALUNOS_COLUMN_ID_EVENTO = "id_evento";
-    private static final String ALUNOS_COLUMN_DATA = "data";
-    private static final String ALUNOS_COLUMN_HORA_ENTRADA = "hora_entrada";
-    private static final String ALUNOS_COLUMN_HORA_SAIDA = "hora_saida";
-    private static final String ALUNOS_COLUMN_TEMPO_PERMANENCIA = "tempo_permanencia";
+    private static final String ALUNOS_COLUMN_NOME = "nome";
 
     // definindo as colunas da tabela de eventos como constantes
-    private static final String EVENTOS_COLUMN_ID = "_id";
+    private static final String EVENTOS_COLUMN_ID = "_id"; // chave primaria
     private static final String EVENTOS_COLUMN_NOME = "nome";
-    private static final String EVENTOS_COLUMN_QUANTIDADE_ALUNOS = "qtd_alunos";
+    private static final String EVENTOS_COLUMN_DATA_HORA = "data_hora"; // armazena dia e horário do evento
+
+    // definindo as colunas da tabela de associação entre alunos e eventos como constantes
+    private static final String ALUNOS_EVENTOS_COLUMN_ALUNO_ID = "aluno_id"; // chave estrangeira e chave primaria
+    private static final String ALUNOS_EVENTOS_COLUMN_EVENTO_ID = "evento_id"; // chave estrangeira e chave primaria
+    private static final String ALUNOS_EVENTOS_COLUMN_HORA_DE_ENTRADA = "hora_de_entrada";
 
     public DbHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.context = context;
     }
 
-    // comando para criar a tabela
+    // cria as tabelas no banco assim que ele inicializa
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String queryAlunos = "CREATE TABLE "+ ALUNOS_TABLE_NAME +" (" +
-                ALUNOS_COLUMN_ID +" INTEGER  PRIMARY KEY AUTOINCREMENT," +
-                ALUNOS_COLUMN_NOME +" VARCHAR(255) NOT NULL," +
-                ALUNOS_COLUMN_RGM +" INTEGER  NOT NULL," +
-                ALUNOS_COLUMN_ID_EVENTO +" INTEGER  NOT NULL," +
-                ALUNOS_COLUMN_DATA +" DATE DEFAULT NULL," +
-                ALUNOS_COLUMN_HORA_ENTRADA +" TIME DEFAULT NULL," +
-                ALUNOS_COLUMN_HORA_SAIDA +" TIME DEFAULT NULL," +
-                ALUNOS_COLUMN_TEMPO_PERMANENCIA +" TIME DEFAULT NULL," +
-                "FOREIGN KEY ("+ ALUNOS_COLUMN_ID_EVENTO +") REFERENCES eventos("+EVENTOS_COLUMN_ID+"));";
+        String alunos_query = "CREATE TABLE IF NOT EXISTS "+ ALUNOS_TABLE_NAME +" (\n" +
+                "    "+ ALUNOS_COLUMN_ID +" INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
+                "    "+ ALUNOS_COLUMN_RGM +" INTEGER NOT NULL UNIQUE,\n" +
+                "    "+ ALUNOS_COLUMN_NOME +" VARCHAR(255) NOT NULL\n" +
+                ");";
+        String eventos_query = "CREATE TABLE IF NOT EXISTS "+ EVENTOS_TABLE_NAME +" (\n" +
+                "    "+ EVENTOS_COLUMN_ID +" INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
+                "    "+ EVENTOS_COLUMN_NOME +" VARCHAR(255) NOT NULL,\n" +
+                "    "+ EVENTOS_COLUMN_DATA_HORA +" DATETIME NOT NULL\n" +
+                ");";
+        String alunos_eventos_query = "CREATE TABLE IF NOT EXISTS "+ ALUNOS_EVENTOS_TABLE_NAME +" (\n" +
+                "    "+ ALUNOS_EVENTOS_COLUMN_ALUNO_ID +" INTEGER NOT NULL,\n" +
+                "    "+ ALUNOS_EVENTOS_COLUMN_EVENTO_ID +" INTEGER NOT NULL,\n" +
+                "    "+ ALUNOS_EVENTOS_COLUMN_HORA_DE_ENTRADA +" DATETIME,\n" +
+                "    PRIMARY KEY (id_aluno, id_evento),\n" +
+                "    FOREIGN KEY (id_aluno) REFERENCES alunos(_id),\n" +
+                "    FOREIGN KEY (id_evento) REFERENCES eventos(_id)\n" +
+                ");";
 
-        String queryEventos = "CREATE TABLE " + EVENTOS_TABLE_NAME + " (" +
-                EVENTOS_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                EVENTOS_COLUMN_NOME + " VARCHAR(255) NOT NULL," +
-                EVENTOS_COLUMN_QUANTIDADE_ALUNOS + " INTEGER DEFAULT 0);";
-
-        String triggerIncrementaQuantidaDeAlunos = "CREATE TRIGGER trigger_incrementa_quantidade_alunos " + "\n" +
-                "AFTER INSERT ON " + ALUNOS_TABLE_NAME + "\n"+
-                "FOR EACH ROW \n" +
-                "BEGIN \n" +
-                "    UPDATE " + EVENTOS_TABLE_NAME+ "\n" +
-                "    SET " + EVENTOS_COLUMN_QUANTIDADE_ALUNOS + " = " + EVENTOS_COLUMN_QUANTIDADE_ALUNOS + " + 1 " + "\n" +
-                "    WHERE " + EVENTOS_COLUMN_ID + " = NEW." + ALUNOS_COLUMN_ID_EVENTO + ";\n" +
-                "END;";
-
-        String triggerDecrementaQuantidadeDeAlunos = "CREATE TRIGGER trigger_decrementa_quantidade_alunos " + "\n" +
-                "AFTER DELETE ON " + ALUNOS_TABLE_NAME + "\n" +
-                "FOR EACH ROW \n" +
-                "BEGIN \n" +
-                "    UPDATE " + EVENTOS_TABLE_NAME + "\n" +
-                "    SET " + EVENTOS_COLUMN_QUANTIDADE_ALUNOS + " = " + EVENTOS_COLUMN_QUANTIDADE_ALUNOS + " - 1 " + "\n" +
-                "    WHERE " + EVENTOS_COLUMN_ID + " = OLD." + ALUNOS_COLUMN_ID_EVENTO + ";\n" +
-                "END;";
-
-        db.execSQL(queryEventos);
-        db.execSQL(queryAlunos);
-        db.execSQL(triggerIncrementaQuantidaDeAlunos);
-        db.execSQL(triggerDecrementaQuantidadeDeAlunos);
+        db.execSQL(alunos_query);
+        db.execSQL(eventos_query);
+        db.execSQL(alunos_eventos_query);
     }
 
     @Override
@@ -110,7 +96,7 @@ public class DbHelper extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
         cv.put(ALUNOS_COLUMN_NOME, nome);
         cv.put(ALUNOS_COLUMN_RGM, rgm);
-        cv.put(ALUNOS_COLUMN_ID_EVENTO, idEvento);
+        cv.put(ALUNOS_COLUMN_ID_EVENTO_1, idEvento);
         cv.put(ALUNOS_COLUMN_DATA, data == null ? String.valueOf(DateFormat.format("yyyy-MM-dd", new Date())) : String.valueOf(DateFormat.format("yyyy-MM-dd", data)));
         cv.put(ALUNOS_COLUMN_HORA_ENTRADA, horaE == null ? null : String.valueOf(DateFormat.format("hh:mm:ss", horaE)));
         cv.put(ALUNOS_COLUMN_HORA_SAIDA, horaS == null ? null :  String.valueOf(DateFormat.format("hh:mm:ss", horaS)));
@@ -125,12 +111,12 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     // função para adicionar aluno sem informar os horários de entrada e saída
-    void adcAluno(String nome, int rgm, int idEvento, Date data) {
+    public void adcAluno(String nome, int rgm, int idEvento, Date data) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(ALUNOS_COLUMN_NOME, nome);
         cv.put(ALUNOS_COLUMN_RGM, rgm);
-        cv.put(ALUNOS_COLUMN_ID_EVENTO, idEvento);
+        cv.put(ALUNOS_COLUMN_ID_EVENTO_1, idEvento);
         cv.put(ALUNOS_COLUMN_DATA, String.valueOf(DateFormat.format("yyyy-MM-dd", data)));
         long resultado = db.insert(ALUNOS_TABLE_NAME, null, cv);
 
@@ -146,7 +132,7 @@ public class DbHelper extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
         cv.put(ALUNOS_COLUMN_NOME, nome);
         cv.put(ALUNOS_COLUMN_RGM, rgm);
-        cv.put(ALUNOS_COLUMN_ID_EVENTO, Integer.parseInt(idEvento));
+        cv.put(ALUNOS_COLUMN_ID_EVENTO_1, Integer.parseInt(idEvento));
         cv.put(ALUNOS_COLUMN_DATA, String.valueOf(DateFormat.format("yyyy-MM-dd", new Date())));
         long resultado = db.insert(ALUNOS_TABLE_NAME, null, cv);
 
@@ -172,7 +158,7 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     public Cursor lerAlunoPorIdEvento(int idEvento) {
-        String query = "SELECT * FROM " + ALUNOS_TABLE_NAME + " WHERE " + ALUNOS_COLUMN_ID_EVENTO + "=?";
+        String query = "SELECT * FROM " + ALUNOS_TABLE_NAME + " WHERE " + ALUNOS_COLUMN_ID_EVENTO_1 + "=?";
 
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -307,7 +293,7 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     public Cursor lerEventoPorId(int id) {
-        String query = "SELECT * FROM " + EVENTOS_TABLE_NAME + " WHERE " + EVENTOS_COLUMN_ID + "=" + ALUNOS_COLUMN_ID_EVENTO;
+        String query = "SELECT * FROM " + EVENTOS_TABLE_NAME + " WHERE " + EVENTOS_COLUMN_ID + "=" + ALUNOS_COLUMN_ID_EVENTO_1;
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = null;
