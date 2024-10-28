@@ -19,6 +19,7 @@ import com.gustavomacedo.inout.R;
 import com.gustavomacedo.inout.controller.EventoAdapter;
 import com.gustavomacedo.inout.model.DbHelper;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class EventosActivity extends AppCompatActivity {
@@ -46,6 +47,10 @@ public class EventosActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        File dir = getDataDir();
+        File file = new File(dir, "InOut.db");
+        boolean deleted = file.delete();
 
         eventosView = findViewById(R.id.eventosView);
         btnAddEvento = findViewById(R.id.btnAddEvento);

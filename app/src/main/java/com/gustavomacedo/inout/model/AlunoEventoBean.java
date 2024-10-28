@@ -3,37 +3,35 @@ package com.gustavomacedo.inout.model;
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvDate;
 
-import java.util.Date;
-
 public class AlunoEventoBean {
     @CsvBindByName(column = "aluno_id")
-    private int idAluno;
+    private String idAluno;
     @CsvBindByName(column = "evento_id")
-    private int idEvento;
+    private String idEvento;
     @CsvBindByName(column = "hora_de_entrada")
     @CsvDate("HH:mm:ss")
-    private Date horaEntrada;
+    private String horaEntrada;
 
-    public AlunoEventoBean(int idAluno, int idEvento) {
+    public AlunoEventoBean(String idAluno, String idEvento) {
         this.idAluno = idAluno;
         this.idEvento = idEvento;
     }
 
-    public AlunoEventoBean(int idAluno, int idEvento, Date horaEntrada) {
+    public AlunoEventoBean(String idAluno, String idEvento, String horaEntrada) {
         this.idAluno = idAluno;
         this.idEvento = idEvento;
         this.horaEntrada = horaEntrada;
     }
 
-    public int getIdAluno() {
+    public String getIdAluno() {
         return idAluno;
     }
 
-    public int getIdEvento() {
+    public String getIdEvento() {
         return idEvento;
     }
 
-    public Date getHoraEntrada() {
+    public String getHoraEntrada() {
         return horaEntrada;
     }
 }

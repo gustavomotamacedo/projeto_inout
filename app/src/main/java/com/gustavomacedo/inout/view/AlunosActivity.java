@@ -79,8 +79,8 @@ public class AlunosActivity extends AppCompatActivity {
             Toast.makeText(this, "Não há dados", Toast.LENGTH_SHORT).show();
         } else {
             while(cursor.moveToNext()) {
-                alunoNome.add(String.valueOf(cursor.getString(0)));
-                alunoRgm.add(String.valueOf(cursor.getString(1)));
+                alunoRgm.add(String.valueOf(cursor.getString(0)));
+                alunoNome.add(String.valueOf(cursor.getString(1)));
                 alunoEvento.add(String.valueOf(cursor.getString(2)));
                 alunoHorario.add(String.valueOf(cursor.getString(3)));
             }

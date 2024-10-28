@@ -422,7 +422,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
     // CODIGOS PARA O ALUNO EVENTO
 
-    public void addAlunoEvento(int alunoId, int eventoId) {
+    public void addAlunoEvento(String alunoId, String eventoId) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
 
@@ -435,5 +435,12 @@ public class DbHelper extends SQLiteOpenHelper {
         } else {
             Toast.makeText(context, "AlunoEvento adcionado!", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void limparBanco() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(ALUNOS_TABLE_NAME, null, null);
+        db.delete(EVENTOS_TABLE_NAME, null, null);
+        db.delete(ALUNOS_EVENTOS_TABLE_NAME, null, null);
     }
 }
