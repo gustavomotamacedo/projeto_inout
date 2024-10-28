@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -18,7 +19,7 @@ public class DbHelper extends SQLiteOpenHelper {
     private Context context;
 
     private static final String DATABASE_NAME = "InOut.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     // armazenando nomes das tabelas em constantes
     private static final String ALUNOS_TABLE_NAME = "alunos";
@@ -48,24 +49,21 @@ public class DbHelper extends SQLiteOpenHelper {
     // cria as tabelas no banco assim que ele inicializa
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String alunos_query = "CREATE TABLE IF NOT EXISTS "+ ALUNOS_TABLE_NAME +" (\n" +
-                "    "+ ALUNOS_COLUMN_ID +" INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
-                "    "+ ALUNOS_COLUMN_RGM +" INTEGER NOT NULL UNIQUE,\n" +
-                "    "+ ALUNOS_COLUMN_NOME +" VARCHAR(255) NOT NULL\n" +
-                ");";
-        String eventos_query = "CREATE TABLE IF NOT EXISTS "+ EVENTOS_TABLE_NAME +" (\n" +
-                "    "+ EVENTOS_COLUMN_ID +" INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
-                "    "+ EVENTOS_COLUMN_NOME +" VARCHAR(255) NOT NULL,\n" +
-                "    "+ EVENTOS_COLUMN_DATA_HORA +" DATETIME NOT NULL\n" +
-                ");";
-        String alunos_eventos_query = "CREATE TABLE IF NOT EXISTS "+ ALUNOS_EVENTOS_TABLE_NAME +" (\n" +
-                "    "+ ALUNOS_EVENTOS_COLUMN_ALUNO_ID +" INTEGER NOT NULL,\n" +
-                "    "+ ALUNOS_EVENTOS_COLUMN_EVENTO_ID +" INTEGER NOT NULL,\n" +
-                "    "+ ALUNOS_EVENTOS_COLUMN_HORA_DE_ENTRADA +" DATETIME,\n" +
-                "    PRIMARY KEY (id_aluno, id_evento),\n" +
-                "    FOREIGN KEY (id_aluno) REFERENCES alunos(_id),\n" +
-                "    FOREIGN KEY (id_evento) REFERENCES eventos(_id)\n" +
-                ");";
+        String alunos_query = "CREATE TABLE "+ ALUNOS_TABLE_NAME +" (" +
+                "    "+ ALUNOS_COLUMN_ID +" INTEGER PRIMARY KEY," +
+                "    "+ ALUNOS_COLUMN_RGM +" INTEGER NOT NULL UNIQUE," +
+                "    "+ ALUNOS_COLUMN_NOME +" VARCHAR(255) NOT NULL);";
+        String eventos_query = "CREATE TABLE "+ EVENTOS_TABLE_NAME +" (" +
+                "    "+ EVENTOS_COLUMN_ID +" INTEGER PRIMARY KEY," +
+                "    "+ EVENTOS_COLUMN_NOME +" VARCHAR(255) NOT NULL," +
+                "    "+ EVENTOS_COLUMN_DATA_HORA +" DATETIME NOT NULL);";
+        String alunos_eventos_query = "CREATE TABLE "+ ALUNOS_EVENTOS_TABLE_NAME +" (" +
+                "    "+ ALUNOS_EVENTOS_COLUMN_ALUNO_ID +" INTEGER NOT NULL," +
+                "    "+ ALUNOS_EVENTOS_COLUMN_EVENTO_ID +" INTEGER NOT NULL," +
+                "    "+ ALUNOS_EVENTOS_COLUMN_HORA_DE_ENTRADA +" DATETIME," +
+                "    PRIMARY KEY ("+ALUNOS_EVENTOS_COLUMN_ALUNO_ID+", "+ALUNOS_EVENTOS_COLUMN_EVENTO_ID+")," +
+                "    FOREIGN KEY ("+ALUNOS_EVENTOS_COLUMN_ALUNO_ID+") REFERENCES "+ALUNOS_TABLE_NAME+"("+ALUNOS_COLUMN_ID+")," +
+                "    FOREIGN KEY ("+ALUNOS_EVENTOS_COLUMN_EVENTO_ID+") REFERENCES "+EVENTOS_TABLE_NAME+"("+EVENTOS_COLUMN_ID+"));";
 
         db.execSQL(alunos_query);
         db.execSQL(eventos_query);
@@ -83,10 +81,24 @@ public class DbHelper extends SQLiteOpenHelper {
     // CODIGOS PARA O ALUNO
 
     // função de adicionar aluno
-    void addAluno(String rgm, String nome) {
+    public void addAluno(String rgm, String nome) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(ALUNOS_COLUMN_RGM, rgm);
+        cv.put(ALUNOS_COLUMN_NOME, nome);
+        long resultado = db.insert(ALUNOS_TABLE_NAME, null, cv);
+
+        if (resultado == -1){
+            Toast.makeText(context, "Falha ao adicionar o aluno", Toast.LENGTH_SHORT).show();
+        }else{
+            Toast.makeText(context, "Adicionado com sucesso", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void addAluno(int rgm, String nome) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(ALUNOS_COLUMN_RGM, String.valueOf(rgm));
         cv.put(ALUNOS_COLUMN_NOME, nome);
         long resultado = db.insert(ALUNOS_TABLE_NAME, null, cv);
 
@@ -110,12 +122,14 @@ public class DbHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
+    // Retorna um cursor que armazena nome do aluno, rgm, nome do evento e horario de entrada nessa ordem passando um inteiro como idEvento
     public Cursor lerAlunosEmUmEvento(int idEvento) {
-        String query = "SELECT "+ ALUNOS_TABLE_NAME +"."+ ALUNOS_COLUMN_RGM + ALUNOS_TABLE_NAME +"."+ ALUNOS_COLUMN_NOME +
+        String query = "SELECT "+ ALUNOS_TABLE_NAME +"."+ ALUNOS_COLUMN_RGM + ", " + ALUNOS_TABLE_NAME +"."+ ALUNOS_COLUMN_NOME + ", " + EVENTOS_TABLE_NAME + "." + EVENTOS_COLUMN_NOME +
+                ", " + ALUNOS_EVENTOS_TABLE_NAME + "." + ALUNOS_EVENTOS_COLUMN_HORA_DE_ENTRADA +
                 " FROM "+ ALUNOS_TABLE_NAME +
                 " INNER JOIN "+ALUNOS_EVENTOS_TABLE_NAME+" ON "+ALUNOS_TABLE_NAME+"."+ALUNOS_COLUMN_ID+" = "+ALUNOS_EVENTOS_TABLE_NAME+"."+ALUNOS_EVENTOS_COLUMN_ALUNO_ID+
                 " INNER JOIN "+EVENTOS_TABLE_NAME+" ON "+EVENTOS_TABLE_NAME+"."+EVENTOS_COLUMN_ID+" = "+ALUNOS_EVENTOS_TABLE_NAME+"."+ALUNOS_EVENTOS_COLUMN_EVENTO_ID+
-                " WHERE "+EVENTOS_COLUMN_ID+" = ?;";
+                " WHERE  "+EVENTOS_TABLE_NAME+"."+EVENTOS_COLUMN_ID+" = ?;";
 
         // retorna, respectivamento, o RGM e nome de todos os alunos cadastrados em um evento determinado
 
@@ -125,6 +139,28 @@ public class DbHelper extends SQLiteOpenHelper {
 
         if (db != null) {
             cursor = db.rawQuery(query, new String[] {String.valueOf(idEvento)});
+        }
+
+        return cursor;
+    }
+
+    // Retorna um cursor que armazena nome do aluno, rgm, nome do evento e horario de entrada nessa ordem passando uma String como idEvento
+    public Cursor lerAlunosEmUmEvento(String idEvento) {
+        String query = "SELECT "+ ALUNOS_TABLE_NAME +"."+ ALUNOS_COLUMN_RGM + ", " + ALUNOS_TABLE_NAME +"."+ ALUNOS_COLUMN_NOME + ", " + EVENTOS_TABLE_NAME + "." + EVENTOS_COLUMN_NOME +
+                ", " + ALUNOS_EVENTOS_TABLE_NAME + "." + ALUNOS_EVENTOS_COLUMN_HORA_DE_ENTRADA +
+                " FROM "+ ALUNOS_TABLE_NAME +
+                " INNER JOIN "+ALUNOS_EVENTOS_TABLE_NAME+" ON "+ALUNOS_TABLE_NAME+"."+ALUNOS_COLUMN_ID+" = "+ALUNOS_EVENTOS_TABLE_NAME+"."+ALUNOS_EVENTOS_COLUMN_ALUNO_ID+
+                " INNER JOIN "+EVENTOS_TABLE_NAME+" ON "+EVENTOS_TABLE_NAME+"."+EVENTOS_COLUMN_ID+" = "+ALUNOS_EVENTOS_TABLE_NAME+"."+ALUNOS_EVENTOS_COLUMN_EVENTO_ID+
+                " WHERE  "+EVENTOS_TABLE_NAME+"."+EVENTOS_COLUMN_ID+" = ?;";
+
+        // retorna, respectivamento, o RGM e nome de todos os alunos cadastrados em um evento determinado
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = null;
+
+        if (db != null) {
+            cursor = db.rawQuery(query, new String[] {idEvento});
         }
 
         return cursor;
@@ -158,7 +194,7 @@ public class DbHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
-    public Integer lerIdAlunoPorRGM(String rgm) {
+    public Cursor lerIdAlunoPorRGM(String rgm) {
         String query = "SELECT "+ALUNOS_COLUMN_ID+" FROM " + ALUNOS_TABLE_NAME + " WHERE " + ALUNOS_COLUMN_RGM + "=?";
 
         SQLiteDatabase db = this.getReadableDatabase();
@@ -169,37 +205,36 @@ public class DbHelper extends SQLiteOpenHelper {
             cursor = db.rawQuery(query, new String[] {rgm});
         }
 
-        return cursor.getInt(0);
+        return cursor;
     }
 
-    public boolean atualizarEntradaDoAlunoEmUmEvento(String rgm, String eventoId) {
+    public void atualizarEntradaDoAlunoEmUmEvento(String rgm, String eventoId) {
         @SuppressLint("SimpleDateFormat")
-        SimpleDateFormat hourFormat = new SimpleDateFormat("HH:mm:ss");
+        SimpleDateFormat hourFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         SQLiteDatabase dbWrite = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
-        String alunoIdStr = String.valueOf(lerIdAlunoPorRGM(rgm));
+        Cursor alunoIdCursor = lerIdAlunoPorRGM(rgm);
+        alunoIdCursor.moveToNext();
+        String alunoIdStr = alunoIdCursor.getString(0);
         long now = new Date().getTime();
         String horaAtualStr = hourFormat.format(now);
-
-        Cursor line = null;
 
         long result = 0;
 
         if (dbWrite != null) {
             cv.put(ALUNOS_EVENTOS_COLUMN_HORA_DE_ENTRADA, horaAtualStr);
-            result = dbWrite.update(ALUNOS_EVENTOS_TABLE_NAME, cv, ALUNOS_EVENTOS_COLUMN_ALUNO_ID +
-                    "=? and "+ ALUNOS_EVENTOS_COLUMN_EVENTO_ID +
-                    "=? and " + ALUNOS_EVENTOS_COLUMN_HORA_DE_ENTRADA +
-                    " IS NULL", new String[]{alunoIdStr, eventoId});
+            result = dbWrite.update(ALUNOS_EVENTOS_TABLE_NAME, cv, ALUNOS_EVENTOS_COLUMN_ALUNO_ID + "=? and " +
+                    ALUNOS_EVENTOS_COLUMN_EVENTO_ID + "=? and " +
+                    ALUNOS_EVENTOS_COLUMN_HORA_DE_ENTRADA + " IS NULL", new String[]{alunoIdStr, eventoId});
         }
 
         if (result == -1) {
             Toast.makeText(context, "Aluno não cadastrado", Toast.LENGTH_SHORT).show();
-            return false;
-        } else {
+        } else if (result == 0) {
+            Toast.makeText(context, "Nenhuma linha foi afetada", Toast.LENGTH_SHORT).show();
+        }else {
             Toast.makeText(context, "Horario atualizado", Toast.LENGTH_SHORT).show();
-            return true;
         }
 
     }
@@ -241,10 +276,10 @@ public class DbHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
-    public Integer quantidadeDeAlunosEmUmEvento(String eventoId) {
-        String query = "SELECT COUNT(*) AS quantidade_alunos " +
-                "FROM "+ALUNOS_EVENTOS_TABLE_NAME+" " +
-                "WHERE "+ALUNOS_EVENTOS_COLUMN_EVENTO_ID+" = ?;";
+    public String quantidadeDeAlunosEmUmEvento(String eventoId) {
+        String query = "SELECT COUNT(*)" +
+                " FROM "+ALUNOS_EVENTOS_TABLE_NAME+
+                " WHERE "+ALUNOS_EVENTOS_COLUMN_EVENTO_ID+"=?;";
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = null;
@@ -253,7 +288,41 @@ public class DbHelper extends SQLiteOpenHelper {
             cursor = db.rawQuery(query, new String[]{eventoId});
         }
 
-        return 0;
+        assert cursor != null;
+        cursor.moveToNext();
+
+        return cursor.getString(0);
+    }
+
+    public Cursor lerEventosPorAluno(String alunoId) {
+        String query = "SELECT e.*"+
+                " FROM "+EVENTOS_TABLE_NAME+" e" +
+                " JOIN "+ALUNOS_EVENTOS_TABLE_NAME+" ae ON e."+EVENTOS_COLUMN_ID+" = ae."+ALUNOS_EVENTOS_COLUMN_EVENTO_ID+
+                " WHERE ae."+ALUNOS_EVENTOS_COLUMN_ALUNO_ID+" = ?;";
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = null;
+
+        if (db != null) {
+            cursor = db.rawQuery(query, new String[]{alunoId});
+        }
+
+        return cursor;
+    }
+    public Cursor lerEventosPorAluno(int alunoId) {
+        String query = "SELECT e.*"+
+                " FROM "+EVENTOS_TABLE_NAME+" e" +
+                " JOIN "+ALUNOS_EVENTOS_TABLE_NAME+" ae ON e."+EVENTOS_COLUMN_ID+" = ae."+ALUNOS_EVENTOS_COLUMN_EVENTO_ID+
+                " WHERE ae."+ALUNOS_EVENTOS_COLUMN_ALUNO_ID+" = ?;";
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = null;
+
+        if (db != null) {
+            cursor = db.rawQuery(query, new String[]{String.valueOf(alunoId)});
+        }
+
+        return cursor;
     }
 
     // @Param : int id
@@ -309,7 +378,15 @@ public class DbHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues cv = new ContentValues();
-        String dataHoraFormatada = dataHoraDf.format(dataHora);
+
+        String dataHoraFormatada = "null";
+
+        try {
+            Date dataAux = dataHoraDf.parse(dataHora);
+            dataHoraFormatada = dataHoraDf.format(dataAux);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
 
         cv.put(EVENTOS_COLUMN_NOME, nome);
         cv.put(EVENTOS_COLUMN_DATA_HORA, dataHoraFormatada);
@@ -341,5 +418,22 @@ public class DbHelper extends SQLiteOpenHelper {
     public void resetarTestesEventos() {
         limparTabelaEventos();
         mockarDadosEventos();
+    }
+
+    // CODIGOS PARA O ALUNO EVENTO
+
+    public void addAlunoEvento(int alunoId, int eventoId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+
+        cv.put(ALUNOS_EVENTOS_COLUMN_ALUNO_ID, alunoId);
+        cv.put(ALUNOS_EVENTOS_COLUMN_EVENTO_ID, eventoId);
+        long resultado = db.insert(ALUNOS_EVENTOS_TABLE_NAME, null, cv);
+
+        if (resultado == -1) {
+            Toast.makeText(context, "Falha ao adicionar AlunoEvento", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(context, "AlunoEvento adcionado!", Toast.LENGTH_SHORT).show();
+        }
     }
 }

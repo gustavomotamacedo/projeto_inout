@@ -4,16 +4,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.CursorIndexOutOfBoundsException;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -22,29 +19,23 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.gustavomacedo.inout.controller.AlunoAdapter;
 import com.gustavomacedo.inout.R;
+import com.gustavomacedo.inout.controller.AlunoAdapter;
 import com.gustavomacedo.inout.model.DbHelper;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Objects;
 
-@RequiresApi(api = Build.VERSION_CODES.O)
 public class AlunosActivity extends AppCompatActivity {
 
     private RecyclerView alunosView;
     private Button btnScan;
-    private DbHelper dbHelper;
-    private int idEvento;
+    private String idEventoStr;
     private Intent in;
-    private Handler handler;
+    private DbHelper dbHelper;
 
-    private ArrayList<String> alunoNome, alunoRgm, alunoData, alunoHoraEntrada, alunoHoraSaida, alunoEvento;
-
-    private static int RGM;
+    private ArrayList<String> alunoRgm, alunoNome, alunoEvento, alunoHorario;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,25 +48,22 @@ public class AlunosActivity extends AppCompatActivity {
             return insets;
         });
 
-        alunoNome = new ArrayList<>();
-        alunoRgm = new ArrayList<>();
-        alunoEvento = new ArrayList<>();
-        alunoData = new ArrayList<>();
-        alunoHoraEntrada = new ArrayList<>();
-        alunoHoraSaida = new ArrayList<>();
-
         alunosView = findViewById(R.id.alunosView);
         btnScan = findViewById(R.id.btnScan);
 
+        alunoNome = new ArrayList<>();
+        alunoRgm = new ArrayList<>();
+        alunoEvento = new ArrayList<>();
+        alunoHorario = new ArrayList<>();
         in = getIntent();
 
-        idEvento = Integer.parseInt(Objects.requireNonNull(in.getStringExtra("_id_evento")));
+        idEventoStr = in.getStringExtra("_id_evento");
 
         dbHelper = new DbHelper(this);
 
         inserirAlunosNosArrays();
 
-        AlunoAdapter alunoAdapter = new AlunoAdapter(this, alunoNome, alunoRgm, alunoEvento, alunoData, alunoHoraEntrada, alunoHoraSaida);
+        AlunoAdapter alunoAdapter = new AlunoAdapter(this, alunoNome, alunoRgm, alunoEvento, alunoHorario);
 
         alunosView.setAdapter(alunoAdapter);
         alunosView.setLayoutManager(new LinearLayoutManager(this));
@@ -86,17 +74,15 @@ public class AlunosActivity extends AppCompatActivity {
     }
 
     private void inserirAlunosNosArrays() {
-        Cursor cursor = dbHelper.lerAlunoPorIdEvento(idEvento);
+        Cursor cursor = dbHelper.lerAlunosEmUmEvento(idEventoStr);
         if (cursor == null) {
             Toast.makeText(this, "Não há dados", Toast.LENGTH_SHORT).show();
         } else {
             while(cursor.moveToNext()) {
-                alunoNome.add(String.valueOf(cursor.getString(1)));
-                alunoRgm.add(String.valueOf(cursor.getString(2)));
-                alunoEvento.add(String.valueOf(cursor.getString(3)));
-                alunoData.add(String.valueOf(cursor.getString(4)));
-                alunoHoraEntrada.add(String.valueOf(cursor.getString(5)));
-                alunoHoraSaida.add(String.valueOf(cursor.getString(6)));
+                alunoNome.add(String.valueOf(cursor.getString(0)));
+                alunoRgm.add(String.valueOf(cursor.getString(1)));
+                alunoEvento.add(String.valueOf(cursor.getString(2)));
+                alunoHorario.add(String.valueOf(cursor.getString(3)));
             }
         }
     }
@@ -114,17 +100,22 @@ public class AlunosActivity extends AppCompatActivity {
         if (result.getContents() != null) {
 
             String[] alunoInfo = result.getContents().split(",");
-            boolean resultado = false;
 
-            Cursor aluno = dbHelper.lerAlunoPorRGM(Integer.parseInt(alunoInfo[1]));
+            String eventoId = in.getStringExtra("_id_evento");
+
+            Cursor alunoIdCursor = dbHelper.lerIdAlunoPorRGM(alunoInfo[0]);
+            alunoIdCursor.moveToNext();
+            int alunoId = Integer.parseInt(alunoIdCursor.getString(0));
+            Cursor alunoEventos = dbHelper.lerEventosPorAluno(alunoId);
 
             try {
-                aluno.moveToNext();
-                if (aluno.getString(3).equals(in.getStringExtra("_id_evento"))) {
-                    dbHelper.atualizarEntradaESaidaDoAluno(alunoInfo[1]);
-                    recreate();
-                } else {
-                    Toast.makeText(this, "Alunos cadastrado em outro evento", Toast.LENGTH_SHORT).show();
+                while (alunoEventos.moveToNext()) {
+                    if (alunoEventos.getString(0).equals(eventoId)) {
+                        dbHelper.atualizarEntradaDoAlunoEmUmEvento(alunoInfo[0], eventoId);
+                        recreate();
+                    } else {
+                        Toast.makeText(this, "Alunos cadastrado em outro evento", Toast.LENGTH_SHORT).show();
+                    }
                 }
             } catch (CursorIndexOutOfBoundsException e){
                 Log.d("PUNHETINHA", e.getMessage());
@@ -144,7 +135,7 @@ public class AlunosActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialogInterface, int i) {
                 recreate();
                 dialogInterface.dismiss();
-                dbHelper.addAluno(nome, Integer.parseInt(rgm), Integer.parseInt(idEvento), new Date());
+                dbHelper.addAluno(nome, rgm);
             }
         });
         builder.setNegativeButton("Não", new DialogInterface.OnClickListener() {

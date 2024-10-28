@@ -22,11 +22,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:inputType="text"
-            android:text="Nome do evento" />
+            android:hint="Nome do evento"
+            android:inputType="text" />
+
+        <EditText
+            android:id="@+id/edtEventoDataHora"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="yyyy-MM-dd HH:mm:ss"
+            android:inputType="datetime" />
 
         <Button
-            android:id="@+id/btnAdcEvento"
+            android:id="@+id/btnAddEvento"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Adicionar Evento" />

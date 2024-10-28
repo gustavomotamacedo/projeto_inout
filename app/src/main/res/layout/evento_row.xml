@@ -42,4 +42,14 @@
         app:layout_constraintBottom_toBottomOf="@+id/eventoNome"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/eventoId" />
+
+    <TextView
+        android:id="@+id/eventoHorario"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:text="TextView"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/eventoQtdAlunos" />
 </androidx.constraintlayout.widget.ConstraintLayout>

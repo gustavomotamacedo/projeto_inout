@@ -19,12 +19,13 @@ import java.util.ArrayList;
 public class EventoAdapter extends RecyclerView.Adapter<EventoAdapter.EventoViewHolder> {
 
     private Context context;
-    private ArrayList eventosId, eventosNome, eventosQtdAlunos;
+    private ArrayList eventosId, eventosNome, eventoHorario, eventosQtdAlunos;
 
-    public EventoAdapter(Context context, ArrayList eventosId, ArrayList eventosNome, ArrayList eventosQtdAlunos) {
+    public EventoAdapter(Context context, ArrayList eventosId, ArrayList eventosNome, ArrayList eventoHorario, ArrayList eventosQtdAlunos) {
         this.context = context;
         this.eventosId = eventosId;
         this.eventosNome = eventosNome;
+        this.eventoHorario = eventoHorario;
         this.eventosQtdAlunos = eventosQtdAlunos;
     }
 
@@ -41,8 +42,9 @@ public class EventoAdapter extends RecyclerView.Adapter<EventoAdapter.EventoView
         holder.eventoId.setText(eventosId.get(position).toString());
         holder.eventoNome.setText(eventosNome.get(position).toString());
         holder.eventoQtdAlunos.setText(eventosQtdAlunos.get(position).toString());
+        holder.eventoHorario.setText(eventoHorario.get(position).toString());
         holder.mainLayout.setOnClickListener(v -> {
-            Intent in = new Intent(context.getApplicationContext(), AlunosActivity.class);
+            Intent in = new Intent(context, AlunosActivity.class);
             in.putExtra("_id_evento", holder.eventoId.getText().toString());
             context.startActivity(in);
         });
@@ -56,12 +58,13 @@ public class EventoAdapter extends RecyclerView.Adapter<EventoAdapter.EventoView
     public class EventoViewHolder extends RecyclerView.ViewHolder {
 
         ConstraintLayout mainLayout;
-        TextView eventoId, eventoNome, eventoQtdAlunos;
+        TextView eventoId, eventoNome, eventoHorario, eventoQtdAlunos;
 
         public EventoViewHolder(@NonNull View itemView) {
             super(itemView);
             eventoId = itemView.findViewById(R.id.eventoId);
             eventoNome = itemView.findViewById(R.id.eventoNome);
+            eventoHorario = itemView.findViewById(R.id.eventoHorario);
             eventoQtdAlunos = itemView.findViewById(R.id.eventoQtdAlunos);
             mainLayout = itemView.findViewById(R.id.mainLayout);
         }

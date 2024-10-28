@@ -14,8 +14,6 @@ import androidx.core.view.WindowInsetsCompat;
 import com.gustavomacedo.inout.R;
 import com.gustavomacedo.inout.model.DbHelper;
 
-import java.util.Date;
-
 
 public class AddAlunoActivity extends AppCompatActivity {
 
@@ -27,7 +25,7 @@ public class AddAlunoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_create_aluno);
+        setContentView(R.layout.activity_add_aluno);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -43,10 +41,7 @@ public class AddAlunoActivity extends AppCompatActivity {
         myDB = new DbHelper(this);
 
         addButton.setOnClickListener(v -> {
-            myDB.addAluno(nome.getText().toString(),
-                    Integer.parseInt(rgm.getText().toString()),
-                    Integer.parseInt(idEvento.getText().toString()),
-                    new Date());
+            myDB.addAluno(rgm.getText().toString(), nome.getText().toString());
             Intent in = new Intent(AddAlunoActivity.this, EventosActivity.class);
             startActivity(in);
         });
