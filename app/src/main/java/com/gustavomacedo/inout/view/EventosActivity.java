@@ -1,13 +1,17 @@
 package com.gustavomacedo.inout.view;
 
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -18,6 +22,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.gustavomacedo.inout.R;
 import com.gustavomacedo.inout.controller.EventoAdapter;
 import com.gustavomacedo.inout.model.DbHelper;
+import com.journeyapps.barcodescanner.ScanContract;
+import com.journeyapps.barcodescanner.ScanOptions;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -30,6 +36,7 @@ public class EventosActivity extends AppCompatActivity {
     private ArrayList<Cursor> eventosPorAluno;
 
     private Button btnAddEvento, btnExportarCsv;
+    private ImageButton btnScanner;
     private DbHelper dbHelper;
 
     private static final String CSV_PATH_ALUNOS = "/data/data/com.gustavomacedo.inout/files/alunos_export.csv";
@@ -55,6 +62,7 @@ public class EventosActivity extends AppCompatActivity {
         eventosView = findViewById(R.id.eventosView);
         btnAddEvento = findViewById(R.id.btnAddEvento);
         btnExportarCsv = findViewById(R.id.btnExportarCsv);
+        btnScanner = findViewById(R.id.btnScanner);
 
         dbHelper = new DbHelper(this);
 
@@ -81,6 +89,8 @@ public class EventosActivity extends AppCompatActivity {
             Intent in = new Intent(this, AddEventoActivity.class);
             startActivity(in);
         });
+
+        btnScanner.setOnClickListener(view -> scanCode());
     }
 
     public void adicionaDadosAosArrays() {
@@ -95,5 +105,57 @@ public class EventosActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "Não há dados", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void scanCode() {
+        ScanOptions scanOptions = new ScanOptions();
+        scanOptions.setPrompt("Volume para cima para ligar o flash");
+        scanOptions.setBeepEnabled(true);
+        scanOptions.setOrientationLocked(true);
+        scanOptions.setCaptureActivity(CaptureScreenActivity.class);
+        scanOptions.setDesiredBarcodeFormats(ScanOptions.ALL_CODE_TYPES);
+        barLauncher.launch(scanOptions);
+    }
+
+    ActivityResultLauncher<ScanOptions> barLauncher = registerForActivityResult(new ScanContract(), result -> {
+        if (result.getContents() != null) {
+
+            int comecoRgm = result.getContents().indexOf("rgm=") + "rgm=".length();
+            int fimRgm = result.getContents().indexOf("&nome=");
+            int comecoNome = fimRgm + "%nome=".length();
+            int fimNome = result.getContents().indexOf("&email");
+
+            String rgm = result.getContents().substring(comecoRgm, fimRgm);
+            String nome = result.getContents().substring(comecoNome, fimNome).replace("%20", " ");
+
+            showAlertDialog("RGM : " + rgm
+                    + "\nNome : " + nome);
+        }
+    });
+
+    private void showAlertDialog(String alunoStr) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(EventosActivity.this);
+        builder.setTitle("Informações do Aluno");
+        builder.setMessage(alunoStr);
+        builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                recreate();
+                dialogInterface.dismiss();
+                // dbHelper.addAluno(nome, rgm);
+            }
+        });
+        builder.setNegativeButton("Não", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                recreate();
+                dialogInterface.dismiss();
+                // Toast.makeText(AlunosActivity.this, "Aluno não criado.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Aqui você chama o show() para exibir o diálogo
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }

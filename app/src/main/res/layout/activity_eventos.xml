@@ -33,4 +33,14 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <ImageButton
+        android:id="@+id/btnScanner"
+        android:layout_width="69dp"
+        android:layout_height="64dp"
+        android:layout_margin="16dp"
+        android:text=""
+        app:layout_constraintBottom_toTopOf="@+id/btnAddEvento"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/baseline_camera_alt_24" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
