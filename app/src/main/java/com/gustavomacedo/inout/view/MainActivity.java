@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
                 eventoBeanList.add(new EventoBean(nextLine[0], nextLine[1], nextLine[2]));
             }
         } catch (Exception e) {
-            Toast.makeText(this, "FUDEU", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "CSV eventos não encontrado!", Toast.LENGTH_SHORT).show();
         }
 
         try {
@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
                 alunoBeanList.add(new AlunoBean(nextLine[0], nextLine[1], nextLine[2]));
             }
         } catch (Exception e) {
-            Toast.makeText(this, "FUDEU", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "CSV alunos não encontrado!", Toast.LENGTH_SHORT).show();
         }
 
         try {
@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
                 associacaoBeanList.add(new AlunoEventoBean(nextLine[0], nextLine[1], nextLine[2]));
             }
         } catch (Exception e) {
-            Toast.makeText(this, "FUDEU", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "CSV associações não encontrado", Toast.LENGTH_SHORT).show();
         }
 
         adicionarEventosNaBaseDeDados(eventoBeanList);

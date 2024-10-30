@@ -120,8 +120,8 @@ public class EventosActivity extends AppCompatActivity {
     ActivityResultLauncher<ScanOptions> barLauncher = registerForActivityResult(new ScanContract(), result -> {
         if (result.getContents() != null) {
             
-            String rgm = result.getContents().split(',')[0];
-            String nome = result.getContents().split(',')[1].replace("%20", " ");
+            String rgm = result.getContents().split(",")[0];
+            String nome = result.getContents().split(",")[1].replace("%20", " ");
 
             showAlertDialog("RGM : " + rgm
                     + "\nNome : " + nome);
