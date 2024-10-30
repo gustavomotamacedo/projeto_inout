@@ -119,14 +119,9 @@ public class EventosActivity extends AppCompatActivity {
 
     ActivityResultLauncher<ScanOptions> barLauncher = registerForActivityResult(new ScanContract(), result -> {
         if (result.getContents() != null) {
-
-            int comecoRgm = result.getContents().indexOf("rgm=") + "rgm=".length();
-            int fimRgm = result.getContents().indexOf("&nome=");
-            int comecoNome = fimRgm + "%nome=".length();
-            int fimNome = result.getContents().indexOf("&email");
-
-            String rgm = result.getContents().substring(comecoRgm, fimRgm);
-            String nome = result.getContents().substring(comecoNome, fimNome).replace("%20", " ");
+            
+            String rgm = result.getContents().split(',')[0];
+            String nome = result.getContents().split(',')[1].replace("%20", " ");
 
             showAlertDialog("RGM : " + rgm
                     + "\nNome : " + nome);
