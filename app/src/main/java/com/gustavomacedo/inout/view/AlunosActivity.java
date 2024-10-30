@@ -49,7 +49,7 @@ public class AlunosActivity extends AppCompatActivity {
         });
 
         alunosView = findViewById(R.id.alunosView);
-        btnScan = findViewById(R.id.btnScan);
+        btnScan = findViewById(R.id.btnScanner);
 
         alunoNome = new ArrayList<>();
         alunoRgm = new ArrayList<>();
@@ -93,17 +93,24 @@ public class AlunosActivity extends AppCompatActivity {
         scanOptions.setBeepEnabled(true);
         scanOptions.setOrientationLocked(true);
         scanOptions.setCaptureActivity(CaptureScreenActivity.class);
+        scanOptions.setDesiredBarcodeFormats(ScanOptions.ALL_CODE_TYPES);
         barLauncher.launch(scanOptions);
     }
 
     ActivityResultLauncher<ScanOptions> barLauncher = registerForActivityResult(new ScanContract(), result -> {
         if (result.getContents() != null) {
 
-            String[] alunoInfo = result.getContents().split(",");
+            int comecoRgm = result.getContents().indexOf("rgm=") + "rgm=".length();
+            int fimRgm = result.getContents().indexOf("&nome=");
+            int comecoNome = fimRgm + "%nome=".length();
+            int fimNome = result.getContents().indexOf("&email");
+
+            String rgm = result.getContents().substring(comecoRgm, fimRgm);
+            String nome = result.getContents().substring(comecoNome, fimNome).replace("%20", " ");
 
             String eventoId = in.getStringExtra("_id_evento");
 
-            Cursor alunoIdCursor = dbHelper.lerIdAlunoPorRGM(alunoInfo[0]);
+            Cursor alunoIdCursor = dbHelper.lerIdAlunoPorRGM(rgm);
             alunoIdCursor.moveToNext();
             int alunoId = Integer.parseInt(alunoIdCursor.getString(0));
             Cursor alunoEventos = dbHelper.lerEventosPorAluno(alunoId);
@@ -111,31 +118,30 @@ public class AlunosActivity extends AppCompatActivity {
             try {
                 while (alunoEventos.moveToNext()) {
                     if (alunoEventos.getString(0).equals(eventoId)) {
-                        dbHelper.atualizarEntradaDoAlunoEmUmEvento(alunoInfo[0], eventoId);
-                        recreate();
-                    } else {
-                        Toast.makeText(this, "Alunos cadastrado em outro evento", Toast.LENGTH_SHORT).show();
+                        dbHelper.atualizarEntradaDoAlunoEmUmEvento(rgm, eventoId);
                     }
                 }
             } catch (CursorIndexOutOfBoundsException e){
                 Log.d("PUNHETINHA", e.getMessage());
-                AlertDialog.Builder builder = getBuilder(alunoInfo[0], alunoInfo[1], in.getStringExtra("_id_evento"));
-                builder.show();
+//                AlertDialog.Builder builder = getBuilder(alunoInfo[0], alunoInfo[1], in.getStringExtra("_id_evento"));
+//                builder.show();
             }
-        }
 
+            showAlertDialog("RGM : " + rgm
+                            + "\nNome : " + nome);
+        }
     });
 
-    private AlertDialog.Builder getBuilder(String nome, String rgm, String idEvento) {
+    private void showAlertDialog(String alunoStr) {
         AlertDialog.Builder builder = new AlertDialog.Builder(AlunosActivity.this);
-        builder.setTitle("Cadastrar aluno no evento atual?");
-        builder.setMessage("Aluno não cadastrado!\nDeseja cadastra-lo no evento atual?");
+        builder.setTitle("Informações do Aluno");
+        builder.setMessage(alunoStr);
         builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 recreate();
                 dialogInterface.dismiss();
-                dbHelper.addAluno(nome, rgm);
+                // dbHelper.addAluno(nome, rgm);
             }
         });
         builder.setNegativeButton("Não", new DialogInterface.OnClickListener() {
@@ -143,9 +149,12 @@ public class AlunosActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialogInterface, int i) {
                 recreate();
                 dialogInterface.dismiss();
-                Toast.makeText(AlunosActivity.this, "Aluno não criado.", Toast.LENGTH_SHORT).show();
+                // Toast.makeText(AlunosActivity.this, "Aluno não criado.", Toast.LENGTH_SHORT).show();
             }
         });
-        return builder;
+
+        // Aqui você chama o show() para exibir o diálogo
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }
