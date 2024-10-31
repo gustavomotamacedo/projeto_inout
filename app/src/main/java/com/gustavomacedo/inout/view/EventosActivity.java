@@ -29,7 +29,6 @@ import com.journeyapps.barcodescanner.ScanOptions;
 import com.opencsv.CSVWriter;
 import com.opencsv.CSVWriterBuilder;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,9 +46,9 @@ public class EventosActivity extends AppCompatActivity {
     private ImageButton btnScanner;
     private DbHelper dbHelper;
 
-    private static final String CSV_PATH_ALUNOS = "/data/data/com.gustavomacedo.inout/files/alunos_export.csv";
-    private static final String CSV_PATH_EVENTOS = "/data/data/com.gustavomacedo.inout/files/eventos_export.csv";
-    private static final String CSV_PATH_ALUNO_EVENTOS = "/data/data/com.gustavomacedo.inout/files/aluno_eventos_export.csv";
+    private static final String CSV_PATH_ALUNOS = "/sdcard/Documents/alunos_export.csv";
+    private static final String CSV_PATH_EVENTOS = "/sdcard/Documents/eventos_export.csv";
+    private static final String CSV_PATH_ALUNO_EVENTOS = "/sdcard/Documents/aluno_eventos_export.csv";
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -62,10 +61,6 @@ public class EventosActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
-        File dir = getDataDir();
-        File file = new File(dir, "InOut.db");
-        boolean deleted = file.delete();
 
         eventosView = findViewById(R.id.eventosView);
         btnAddEvento = findViewById(R.id.btnAddEvento);

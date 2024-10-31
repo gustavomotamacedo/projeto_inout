@@ -443,4 +443,18 @@ public class DbHelper extends SQLiteOpenHelper {
         db.delete(EVENTOS_TABLE_NAME, null, null);
         db.delete(ALUNOS_EVENTOS_TABLE_NAME, null, null);
     }
+
+    public boolean alunosTemConteudo(SQLiteDatabase db) {
+        Cursor cursor = db.rawQuery("SELECT COUNT("+ ALUNOS_COLUMN_ID +") FROM " + ALUNOS_TABLE_NAME, null);
+        boolean temConteudo = false;
+
+        if (cursor != null) {
+            cursor.moveToFirst();
+            int count = cursor.getInt(0);
+            temConteudo = count > 0;
+            cursor.close();
+        }
+
+        return temConteudo;
+    }
 }

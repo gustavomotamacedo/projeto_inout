@@ -14,7 +14,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.gustavomacedo.inout.R;
 import com.gustavomacedo.inout.view.AlunosActivity;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class EventoAdapter extends RecyclerView.Adapter<EventoAdapter.EventoViewHolder> {
 
@@ -39,10 +42,19 @@ public class EventoAdapter extends RecyclerView.Adapter<EventoAdapter.EventoView
 
     @Override
     public void onBindViewHolder(@NonNull EventoViewHolder holder, int position) {
+        SimpleDateFormat simpleDateFormat01 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        Date originalDate = null;
+        try {
+            originalDate = simpleDateFormat01.parse(eventoHorario.get(position).toString());
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
         holder.eventoId.setText(eventosId.get(position).toString());
         holder.eventoNome.setText(eventosNome.get(position).toString());
         holder.eventoQtdAlunos.setText(eventosQtdAlunos.get(position).toString());
-        holder.eventoHorario.setText(eventoHorario.get(position).toString());
+        if (originalDate != null)
+            holder.eventoHorario.setText(simpleDateFormat.format(originalDate));
         holder.mainLayout.setOnClickListener(v -> {
             Intent in = new Intent(context, AlunosActivity.class);
             in.putExtra("_id_evento", holder.eventoId.getText().toString());

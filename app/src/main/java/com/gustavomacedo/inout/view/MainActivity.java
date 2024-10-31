@@ -22,7 +22,6 @@ import com.gustavomacedo.inout.model.DbHelper;
 import com.gustavomacedo.inout.model.EventoBean;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -48,39 +47,16 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        File file = new File("/data/data/com.gustavomacedo.inout/databases", "InOut.db");
-        boolean deleted = file.delete();
-
         dbHelper = new DbHelper(this);
-        dbHelper.limparBanco();
-        eventoBeanList = new ArrayList<>();
-        alunoBeanList = new ArrayList<>();
-        associacaoBeanList = new ArrayList<>();
 
         ActionBar actionBar = getSupportActionBar();
         assert actionBar != null;
         actionBar.hide();
 
-        if (deleted) {
-            dbHelper.addEvento("IA. Robótica e Igualdade de Gênero", "2024-11-06 19:10:00");
-            dbHelper.addEvento("Desafios e Oportunidades da Cibersegurança com a IA", "2024-11-07 19:10:00");
-            dbHelper.addEvento("IA Aplicada a Comunicação", "2024-11-07 19:10:00");
-            dbHelper.addEvento("Oportunidades e Estratégias de Social Listening com IA", "2024-11-06 19:10:00");
-            dbHelper.addEvento("Segurança Cibernética : Revolução da Indústria 4.0", "2024-11-07 08:30:00");
-            dbHelper.addEvento("IA aplicada a Diagnostico de Perdas Energéticas", "2024-11-07 19:10:00");
-            dbHelper.addEvento("Transformando Negócios com Ciência de Dados e AI", "2024-11-06 19:10:00");
-            dbHelper.addEvento("Pair programming com ChatGPT", "2024-11-06 08:30:00");
-            dbHelper.addEvento("O mundo pós IA impactos, economia e profissões", "2024-11-07 19:10:00");
-            dbHelper.addEvento("Educação Financeira", "2024-11-07 08:30:00");
-            dbHelper.addEvento("Aspectos Legais da Inteligência Artificial", "2024-11-07 08:30:00");
-            dbHelper.addEvento("Ciência de Dados Análise Preditiva", "2024-11-06 08:30:00");
-            dbHelper.addEvento("Provedores de serviços inteligentes", "2024-11-06 08:30:00");
-            dbHelper.addEvento("Engenharia de Prompt", "2024-11-06 19:10:00");
-        }
+        File file = new File("/data/data/com.gustavomacedo.inout/databases", "InOut.db");
+        boolean deleted = file.delete();
+        inserirEventosOrdenados();
 
-        adicionarEventosNaBaseDeDados(eventoBeanList);
-        adicionarAlunosNaBaseDeDados(alunoBeanList);
-        adicionarAssociacaoNaBaseDeDados(associacaoBeanList);
         txtInOut = findViewById(R.id.txtInOut);
 
         Animation anim = AnimationUtils.loadAnimation(this, R.anim.fade);
@@ -104,6 +80,24 @@ public class MainActivity extends AppCompatActivity {
             public void onAnimationRepeat(Animation animation) { }
         });
     }
+
+    public void inserirEventosOrdenados() {
+        dbHelper.addEvento("Pair programming com ChatGPT", "2024-11-06 08:30:00");
+        dbHelper.addEvento("Ciência de Dados Análise Preditiva", "2024-11-06 08:30:00");
+        dbHelper.addEvento("Provedores de serviços inteligentes", "2024-11-06 08:30:00");
+        dbHelper.addEvento("IA. Robótica e Igualdade de Gênero", "2024-11-06 19:10:00");
+        dbHelper.addEvento("Oportunidades e Estratégias de Social Listening com IA", "2024-11-06 19:10:00");
+        dbHelper.addEvento("Transformando Negócios com Ciência de Dados e AI", "2024-11-06 19:10:00");
+        dbHelper.addEvento("Engenharia de Prompt", "2024-11-06 19:10:00");
+        dbHelper.addEvento("Segurança Cibernética : Revolução da Indústria 4.0", "2024-11-07 08:30:00");
+        dbHelper.addEvento("Educação Financeira", "2024-11-07 08:30:00");
+        dbHelper.addEvento("Aspectos Legais da Inteligência Artificial", "2024-11-07 08:30:00");
+        dbHelper.addEvento("Desafios e Oportunidades da Cibersegurança com a IA", "2024-11-07 19:10:00");
+        dbHelper.addEvento("IA Aplicada a Comunicação", "2024-11-07 19:10:00");
+        dbHelper.addEvento("IA aplicada a Diagnostico de Perdas Energéticas", "2024-11-07 19:10:00");
+        dbHelper.addEvento("O mundo pós IA impactos, economia e profissões", "2024-11-07 19:10:00");
+    }
+
 
     private void adicionarAssociacaoNaBaseDeDados(List<AlunoEventoBean> alunoEventoBeanList) {
         for (AlunoEventoBean ae : alunoEventoBeanList) {
