@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.RequiresApi;
@@ -21,11 +20,8 @@ import com.gustavomacedo.inout.model.AlunoBean;
 import com.gustavomacedo.inout.model.AlunoEventoBean;
 import com.gustavomacedo.inout.model.DbHelper;
 import com.gustavomacedo.inout.model.EventoBean;
-import com.opencsv.CSVReader;
-import com.opencsv.CSVReaderBuilder;
 
 import java.io.File;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,40 +61,21 @@ public class MainActivity extends AppCompatActivity {
         assert actionBar != null;
         actionBar.hide();
 
-        try {
-            CSVReader reader = new CSVReaderBuilder(new FileReader(CSV_PATH_EVENTOS))
-                    .withSkipLines(1)
-                    .build();
-            String [] nextLine;
-            while ((nextLine = reader.readNext()) != null) {
-                eventoBeanList.add(new EventoBean(nextLine[0], nextLine[1], nextLine[2]));
-            }
-        } catch (Exception e) {
-            Toast.makeText(this, "CSV eventos não encontrado!", Toast.LENGTH_SHORT).show();
-        }
-
-        try {
-            CSVReader reader = new CSVReaderBuilder(new FileReader(CSV_PATH_ALUNOS))
-                    .withSkipLines(1)
-                    .build();
-            String [] nextLine;
-            while ((nextLine = reader.readNext()) != null) {
-                alunoBeanList.add(new AlunoBean(nextLine[0], nextLine[1], nextLine[2]));
-            }
-        } catch (Exception e) {
-            Toast.makeText(this, "CSV alunos não encontrado!", Toast.LENGTH_SHORT).show();
-        }
-
-        try {
-            CSVReader reader = new CSVReaderBuilder(new FileReader(CSV_PATH_ALUNOS_EVENTOS))
-                    .withSkipLines(1)
-                    .build();
-            String [] nextLine;
-            while ((nextLine = reader.readNext()) != null) {
-                associacaoBeanList.add(new AlunoEventoBean(nextLine[0], nextLine[1], nextLine[2]));
-            }
-        } catch (Exception e) {
-            Toast.makeText(this, "CSV associações não encontrado", Toast.LENGTH_SHORT).show();
+        if (deleted) {
+            dbHelper.addEvento("IA. Robótica e Igualdade de Gênero", "2024-11-06 19:10:00");
+            dbHelper.addEvento("Desafios e Oportunidades da Cibersegurança com a IA", "2024-11-07 19:10:00");
+            dbHelper.addEvento("IA Aplicada a Comunicação", "2024-11-07 19:10:00");
+            dbHelper.addEvento("Oportunidades e Estratégias de Social Listening com IA", "2024-11-06 19:10:00");
+            dbHelper.addEvento("Segurança Cibernética : Revolução da Indústria 4.0", "2024-11-07 08:30:00");
+            dbHelper.addEvento("IA aplicada a Diagnostico de Perdas Energéticas", "2024-11-07 19:10:00");
+            dbHelper.addEvento("Transformando Negócios com Ciência de Dados e AI", "2024-11-06 19:10:00");
+            dbHelper.addEvento("Pair programming com ChatGPT", "2024-11-06 08:30:00");
+            dbHelper.addEvento("O mundo pós IA impactos, economia e profissões", "2024-11-07 19:10:00");
+            dbHelper.addEvento("Educação Financeira", "2024-11-07 08:30:00");
+            dbHelper.addEvento("Aspectos Legais da Inteligência Artificial", "2024-11-07 08:30:00");
+            dbHelper.addEvento("Ciência de Dados Análise Preditiva", "2024-11-06 08:30:00");
+            dbHelper.addEvento("Provedores de serviços inteligentes", "2024-11-06 08:30:00");
+            dbHelper.addEvento("Engenharia de Prompt", "2024-11-06 19:10:00");
         }
 
         adicionarEventosNaBaseDeDados(eventoBeanList);

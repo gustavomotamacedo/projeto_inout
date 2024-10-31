@@ -30,4 +30,11 @@ public class EventoBean {
     public String getDataHora() {
         return dataHora;
     }
+
+    @Override
+    public String toString() {
+        return id + "," +
+                nome + "," +
+                dataHora;
+    }
 }

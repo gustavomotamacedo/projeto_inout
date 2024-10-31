@@ -21,11 +21,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.gustavomacedo.inout.R;
 import com.gustavomacedo.inout.controller.EventoAdapter;
+import com.gustavomacedo.inout.model.AlunoBean;
 import com.gustavomacedo.inout.model.DbHelper;
+import com.gustavomacedo.inout.model.EventoBean;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
+import com.opencsv.CSVWriter;
+import com.opencsv.CSVWriterBuilder;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class EventosActivity extends AppCompatActivity {
@@ -34,6 +40,8 @@ public class EventosActivity extends AppCompatActivity {
     private ArrayList<String> eventosId, eventosNome, eventosHorario, eventosQtdAlunos;
     private ArrayList<String> alunoId, alunoRgm, alunoNome;
     private ArrayList<Cursor> eventosPorAluno;
+    private ArrayList<EventoBean> eventoBeanArrayList;
+    private ArrayList<AlunoBean> alunoBeanArrayList;
 
     private Button btnAddEvento, btnExportarCsv;
     private ImageButton btnScanner;
@@ -78,7 +86,11 @@ public class EventosActivity extends AppCompatActivity {
         // Arrays da tabela de alunoeventos
         eventosPorAluno = new ArrayList<>();
 
+        eventoBeanArrayList = new ArrayList<>();
+        alunoBeanArrayList = new ArrayList<>();
+
         adicionaDadosAosArrays();
+        criarBeansDasTabelas();
 
         EventoAdapter eventoAdapter = new EventoAdapter(this, eventosId, eventosNome, eventosHorario, eventosQtdAlunos);
 
@@ -91,6 +103,55 @@ public class EventosActivity extends AppCompatActivity {
         });
 
         btnScanner.setOnClickListener(view -> scanCode());
+
+        btnExportarCsv.setOnClickListener(view -> {
+            try {
+                CSVWriter writer = (CSVWriter) new CSVWriterBuilder(new FileWriter(CSV_PATH_EVENTOS))
+                        .withSeparator(',')
+                        .build();
+                // feed in your array (or convert your data to an array)
+                String entrie = "";
+                for (EventoBean e : eventoBeanArrayList) {
+                    entrie += e.toString() + ",";
+                }
+                String[] entries = entrie.split(",");
+                writer.writeNext(entries);
+                writer.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            try {
+                CSVWriter writer = (CSVWriter) new CSVWriterBuilder(new FileWriter(CSV_PATH_ALUNOS))
+                        .withSeparator(',')
+                        .build();
+                // feed in your array (or convert your data to an array)
+                String entrie = "";
+                for (AlunoBean a : alunoBeanArrayList) {
+                    entrie += a.toString() + ",";
+                }
+                String[] entries = entrie.split(",");
+                writer.writeNext(entries);
+                writer.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    private void criarBeansDasTabelas() {
+        for (int i = 0; i < eventosId.size(); i++){
+            eventoBeanArrayList.add(new EventoBean(
+                    eventosId.get(i),
+                    eventosNome.get(i),
+                    eventosHorario.get(i)));
+        }
+        for (int i = 0; i < alunoId.size(); i++) {
+            alunoBeanArrayList.add(new AlunoBean(
+                    alunoId.get(i),
+                    alunoRgm.get(i),
+                    alunoNome.get(i)
+            ));
+        }
     }
 
     public void adicionaDadosAosArrays() {

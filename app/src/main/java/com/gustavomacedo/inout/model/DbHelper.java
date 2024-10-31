@@ -393,9 +393,9 @@ public class DbHelper extends SQLiteOpenHelper {
         long resultado = db.insert(EVENTOS_TABLE_NAME, null, cv);
 
         if (resultado == -1) {
-            Toast.makeText(context, "Falha ao adicionar evento", Toast.LENGTH_SHORT).show();
+        //    Toast.makeText(context, "Falha ao adicionar evento", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(context, "Evento adcionado!", Toast.LENGTH_SHORT).show();
+        //    Toast.makeText(context, "Evento adcionado!", Toast.LENGTH_SHORT).show();
         }
     }
 
