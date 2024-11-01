@@ -16,14 +16,13 @@ import java.util.ArrayList;
 public class AlunoAdapter extends RecyclerView.Adapter<AlunoAdapter.AlunoViewHolder> {
 
     private Context context;
-    private ArrayList alunosNome, alunosRGM, alunosHoraEntrada, alunosEvento;
+    private ArrayList alunosNome, alunosRGM, alunosHoraEntrada;
 
-    public AlunoAdapter(Context context, ArrayList alunosNome, ArrayList alunosRGM, ArrayList alunosEvento, ArrayList alunosHoraEntrada) {
+    public AlunoAdapter(Context context, ArrayList alunosNome, ArrayList alunosRGM, ArrayList alunosHoraEntrada) {
         this.context = context;
         this.alunosNome = alunosNome;
         this.alunosRGM = alunosRGM;
         this.alunosHoraEntrada = alunosHoraEntrada;
-        this.alunosEvento = alunosEvento;
     }
 
     @NonNull
@@ -38,7 +37,6 @@ public class AlunoAdapter extends RecyclerView.Adapter<AlunoAdapter.AlunoViewHol
     public void onBindViewHolder(@NonNull AlunoAdapter.AlunoViewHolder holder, int position) {
         holder.alunoNome.setText(alunosNome.get(position).toString());
         holder.alunoRGM.setText(alunosRGM.get(position).toString());
-        holder.alunoEvento.setText(alunosEvento.get(position).toString());
         holder.alunoHoraEntrada.setText(alunosHoraEntrada.get(position) == null ? "" : alunosHoraEntrada.get(position).toString());
     }
 
@@ -49,13 +47,12 @@ public class AlunoAdapter extends RecyclerView.Adapter<AlunoAdapter.AlunoViewHol
 
     public class AlunoViewHolder extends RecyclerView.ViewHolder {
 
-        TextView alunoNome, alunoRGM, alunoEvento, alunoHoraEntrada;
+        TextView alunoNome, alunoRGM, alunoHoraEntrada;
 
         public AlunoViewHolder(@NonNull View itemView) {
             super(itemView);
             alunoNome = itemView.findViewById(R.id.alunoNome);
             alunoRGM = itemView.findViewById(R.id.alunoRgm);
-            alunoEvento = itemView.findViewById(R.id.alunoEvento);
             alunoHoraEntrada = itemView.findViewById(R.id.alunoHoraEntrada);
         }
     }

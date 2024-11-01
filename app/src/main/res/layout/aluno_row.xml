@@ -25,9 +25,11 @@
                 android:layout_margin="4dp"
                 android:text="alunoNome"
                 android:textColor="@color/black"
-                android:textSize="24sp"
+                android:textSize="28sp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
 
             <TextView
                 android:id="@+id/alunoRgm"
@@ -35,9 +37,11 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
                 android:text="alunoRgm"
-                android:textSize="14sp"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/alunoNome" />
+                app:layout_constraintTop_toBottomOf="@+id/alunoNome"
+                app:layout_constraintVertical_bias="0.0" />
 
             <TextView
                 android:id="@+id/alunoHoraEntrada"
@@ -45,19 +49,11 @@
                 android:layout_height="wrap_content"
                 android:text="alunoHoraEntrada"
                 android:textColor="@color/black"
-                android:textSize="14sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/alunoNome" />
-
-            <TextView
-                android:id="@+id/alunoEvento"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="4dp"
-                android:text="alunoEvento"
+                android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/alunoRgm" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>

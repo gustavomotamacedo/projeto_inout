@@ -2,7 +2,6 @@ package com.gustavomacedo.inout.view;
 
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.widget.Button;
@@ -20,10 +19,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.gustavomacedo.inout.R;
-import com.gustavomacedo.inout.controller.EventoAdapter;
+import com.gustavomacedo.inout.controller.AlunoAdapter;
 import com.gustavomacedo.inout.model.AlunoBean;
 import com.gustavomacedo.inout.model.DbHelper;
-import com.gustavomacedo.inout.model.EventoBean;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 import com.opencsv.CSVWriter;
@@ -31,24 +29,22 @@ import com.opencsv.CSVWriterBuilder;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class EventosActivity extends AppCompatActivity {
 
-    private RecyclerView eventosView;
-    private ArrayList<String> eventosId, eventosNome, eventosHorario, eventosQtdAlunos;
-    private ArrayList<String> alunoId, alunoRgm, alunoNome;
-    private ArrayList<Cursor> eventosPorAluno;
-    private ArrayList<EventoBean> eventoBeanArrayList;
+    private RecyclerView alunosView;
+    private ArrayList<String> alunoId, alunoRgm, alunoNome, alunoEvento, alunoEntrada;
     private ArrayList<AlunoBean> alunoBeanArrayList;
 
-    private Button btnAddEvento, btnExportarCsv;
+    private Button btnExportarCsv;
     private ImageButton btnScanner;
     private DbHelper dbHelper;
 
     private static final String CSV_PATH_ALUNOS = "/sdcard/Documents/alunos_export.csv";
     private static final String CSV_PATH_EVENTOS = "/sdcard/Documents/eventos_export.csv";
-    private static final String CSV_PATH_ALUNO_EVENTOS = "/sdcard/Documents/aluno_eventos_export.csv";
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -62,59 +58,34 @@ public class EventosActivity extends AppCompatActivity {
             return insets;
         });
 
-        eventosView = findViewById(R.id.eventosView);
-        btnAddEvento = findViewById(R.id.btnAddEvento);
+        // instanciando views
+        alunosView = findViewById(R.id.alunosView);
         btnExportarCsv = findViewById(R.id.btnExportarCsv);
         btnScanner = findViewById(R.id.btnScanner);
 
+        // instância do banco de dados
         dbHelper = new DbHelper(this);
 
         // Arrays da tabela de alunos
         alunoId = new ArrayList<>();
         alunoRgm = new ArrayList<>();
         alunoNome = new ArrayList<>();
-        // Arrays da tabela de eventos
-        eventosId = new ArrayList<>();
-        eventosNome = new ArrayList<>();
-        eventosHorario = new ArrayList<>();
-        eventosQtdAlunos = new ArrayList<>();
-        // Arrays da tabela de alunoeventos
-        eventosPorAluno = new ArrayList<>();
-
-        eventoBeanArrayList = new ArrayList<>();
+        alunoEvento = new ArrayList<>();
+        alunoEntrada = new ArrayList<>();
+        // Array de beans de alunos
         alunoBeanArrayList = new ArrayList<>();
 
         adicionaDadosAosArrays();
         criarBeansDasTabelas();
 
-        EventoAdapter eventoAdapter = new EventoAdapter(this, eventosId, eventosNome, eventosHorario, eventosQtdAlunos);
+        AlunoAdapter alunoAdapter = new AlunoAdapter(this, alunoNome, alunoRgm, alunoEntrada);
 
-        eventosView.setAdapter(eventoAdapter);
-        eventosView.setLayoutManager(new LinearLayoutManager(this));
-
-        btnAddEvento.setOnClickListener(v -> {
-            Intent in = new Intent(this, AddEventoActivity.class);
-            startActivity(in);
-        });
+        alunosView.setAdapter(alunoAdapter);
+        alunosView.setLayoutManager(new LinearLayoutManager(this));
 
         btnScanner.setOnClickListener(view -> scanCode());
 
         btnExportarCsv.setOnClickListener(view -> {
-            try {
-                CSVWriter writer = (CSVWriter) new CSVWriterBuilder(new FileWriter(CSV_PATH_EVENTOS))
-                        .withSeparator(',')
-                        .build();
-                // feed in your array (or convert your data to an array)
-                String entrie = "";
-                for (EventoBean e : eventoBeanArrayList) {
-                    entrie += e.toString() + ",";
-                }
-                String[] entries = entrie.split(",");
-                writer.writeNext(entries);
-                writer.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
             try {
                 CSVWriter writer = (CSVWriter) new CSVWriterBuilder(new FileWriter(CSV_PATH_ALUNOS))
                         .withSeparator(',')
@@ -134,12 +105,6 @@ public class EventosActivity extends AppCompatActivity {
     }
 
     private void criarBeansDasTabelas() {
-        for (int i = 0; i < eventosId.size(); i++){
-            eventoBeanArrayList.add(new EventoBean(
-                    eventosId.get(i),
-                    eventosNome.get(i),
-                    eventosHorario.get(i)));
-        }
         for (int i = 0; i < alunoId.size(); i++) {
             alunoBeanArrayList.add(new AlunoBean(
                     alunoId.get(i),
@@ -150,13 +115,15 @@ public class EventosActivity extends AppCompatActivity {
     }
 
     public void adicionaDadosAosArrays() {
-        Cursor eventosCursor = dbHelper.lerTodosOsEventos();
-        if (eventosCursor != null) {
-            while(eventosCursor.moveToNext()) {
-                eventosId.add(String.valueOf(eventosCursor.getString(0)));
-                eventosNome.add(String.valueOf(eventosCursor.getString(1)));
-                eventosHorario.add(String.valueOf(eventosCursor.getString(2)));
-                eventosQtdAlunos.add(String.valueOf(dbHelper.quantidadeDeAlunosEmUmEvento(eventosCursor.getString(0))));
+        Cursor alunosCursor = dbHelper.lerTodosOsAlunos();
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+        String data = sdf.format(new Date());
+        if (alunosCursor != null) {
+            while(alunosCursor.moveToNext()) {
+                alunoId.add(String.valueOf(alunosCursor.getString(0)));
+                alunoRgm.add(String.valueOf(alunosCursor.getString(1)));
+                alunoNome.add(String.valueOf(alunosCursor.getString(2)));
+                alunoEntrada.add(data);
             }
         } else {
             Toast.makeText(this, "Não há dados", Toast.LENGTH_SHORT).show();
@@ -178,22 +145,30 @@ public class EventosActivity extends AppCompatActivity {
             
             String rgm = result.getContents().split(",")[0];
             String nome = result.getContents().split(",")[1].replace("%20", " ");
+            String evento1 = result.getContents().split(",")[2].replace("%20", " ");
+            String evento2 = result.getContents().split(",")[3].replace("%20", " ");
 
-            showAlertDialog("RGM : " + rgm
-                    + "\nNome : " + nome);
+            showAlertDialog(new String[] {rgm, nome, evento1, evento2});
         }
     });
 
-    private void showAlertDialog(String alunoStr) {
+    private void showAlertDialog(String[] alunoStr) {
+        String nome = alunoStr[0];
+        String rgm = alunoStr[1];
+        String evento1 = alunoStr[2];
+        String evento2 = alunoStr[3];
         AlertDialog.Builder builder = new AlertDialog.Builder(EventosActivity.this);
         builder.setTitle("Informações do Aluno");
-        builder.setMessage(alunoStr);
+        builder.setMessage("NOME: " + nome +
+                "\nRGM : " + rgm +
+                "\nEVENTO 1 : " + evento1 +
+                "\nEVENTO 2 : " + evento2);
         builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 recreate();
                 dialogInterface.dismiss();
-                // dbHelper.addAluno(nome, rgm);
+                dbHelper.addAluno(nome, rgm);
             }
         });
         builder.setNegativeButton("Não", new DialogInterface.OnClickListener() {
@@ -201,11 +176,9 @@ public class EventosActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialogInterface, int i) {
                 recreate();
                 dialogInterface.dismiss();
-                // Toast.makeText(AlunosActivity.this, "Aluno não criado.", Toast.LENGTH_SHORT).show();
             }
         });
 
-        // Aqui você chama o show() para exibir o diálogo
         AlertDialog dialog = builder.create();
         dialog.show();
     }
