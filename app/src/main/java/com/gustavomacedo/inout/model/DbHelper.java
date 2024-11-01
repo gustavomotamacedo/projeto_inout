@@ -25,6 +25,7 @@ public class DbHelper extends SQLiteOpenHelper {
     private static final String ALUNOS_TABLE_NAME = "alunos";
     private static final String EVENTOS_TABLE_NAME = "eventos";
     private static final String ALUNOS_EVENTOS_TABLE_NAME = "alunos_eventos"; // tabela associativa
+    private static final String ALUNOS_COLUMN_HORA_DE_ENTRADA = "hora_de_entrada"; // HH:mm:ss
 
     // definindo as colunas da tabela de alunos como constantes
     private static final String ALUNOS_COLUMN_ID = "_id"; // chave primaria
@@ -39,7 +40,6 @@ public class DbHelper extends SQLiteOpenHelper {
     // definindo as colunas da tabela de associação entre alunos e eventos como constantes
     private static final String ALUNOS_EVENTOS_COLUMN_ALUNO_ID = "aluno_id"; // chave estrangeira e chave primaria
     private static final String ALUNOS_EVENTOS_COLUMN_EVENTO_ID = "evento_id"; // chave estrangeira e chave primaria
-    private static final String ALUNOS_EVENTOS_COLUMN_HORA_DE_ENTRADA = "hora_de_entrada"; // HH:mm:ss
 
     public DbHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -52,22 +52,10 @@ public class DbHelper extends SQLiteOpenHelper {
         String alunos_query = "CREATE TABLE "+ ALUNOS_TABLE_NAME +" (" +
                 "    "+ ALUNOS_COLUMN_ID +" INTEGER PRIMARY KEY," +
                 "    "+ ALUNOS_COLUMN_RGM +" INTEGER NOT NULL UNIQUE," +
+                "    "+ ALUNOS_COLUMN_HORA_DE_ENTRADA +" DATETIME," +
                 "    "+ ALUNOS_COLUMN_NOME +" VARCHAR(255) NOT NULL);";
-        String eventos_query = "CREATE TABLE "+ EVENTOS_TABLE_NAME +" (" +
-                "    "+ EVENTOS_COLUMN_ID +" INTEGER PRIMARY KEY," +
-                "    "+ EVENTOS_COLUMN_NOME +" VARCHAR(255) NOT NULL," +
-                "    "+ EVENTOS_COLUMN_DATA_HORA +" DATETIME NOT NULL);";
-        String alunos_eventos_query = "CREATE TABLE "+ ALUNOS_EVENTOS_TABLE_NAME +" (" +
-                "    "+ ALUNOS_EVENTOS_COLUMN_ALUNO_ID +" INTEGER NOT NULL," +
-                "    "+ ALUNOS_EVENTOS_COLUMN_EVENTO_ID +" INTEGER NOT NULL," +
-                "    "+ ALUNOS_EVENTOS_COLUMN_HORA_DE_ENTRADA +" DATETIME," +
-                "    PRIMARY KEY ("+ALUNOS_EVENTOS_COLUMN_ALUNO_ID+", "+ALUNOS_EVENTOS_COLUMN_EVENTO_ID+")," +
-                "    FOREIGN KEY ("+ALUNOS_EVENTOS_COLUMN_ALUNO_ID+") REFERENCES "+ALUNOS_TABLE_NAME+"("+ALUNOS_COLUMN_ID+")," +
-                "    FOREIGN KEY ("+ALUNOS_EVENTOS_COLUMN_EVENTO_ID+") REFERENCES "+EVENTOS_TABLE_NAME+"("+EVENTOS_COLUMN_ID+"));";
 
         db.execSQL(alunos_query);
-        db.execSQL(eventos_query);
-        db.execSQL(alunos_eventos_query);
     }
 
     @Override
@@ -81,11 +69,12 @@ public class DbHelper extends SQLiteOpenHelper {
     // CODIGOS PARA O ALUNO
 
     // função de adicionar aluno
-    public void addAluno(String rgm, String nome) {
+    public void addAluno(String rgm, String nome, String entrada) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(ALUNOS_COLUMN_RGM, rgm);
         cv.put(ALUNOS_COLUMN_NOME, nome);
+        cv.put(ALUNOS_COLUMN_HORA_DE_ENTRADA, entrada);
         long resultado = db.insert(ALUNOS_TABLE_NAME, null, cv);
 
         if (resultado == -1){
@@ -125,7 +114,6 @@ public class DbHelper extends SQLiteOpenHelper {
     // Retorna um cursor que armazena nome do aluno, rgm, nome do evento e horario de entrada nessa ordem passando um inteiro como idEvento
     public Cursor lerAlunosEmUmEvento(int idEvento) {
         String query = "SELECT "+ ALUNOS_TABLE_NAME +"."+ ALUNOS_COLUMN_RGM + ", " + ALUNOS_TABLE_NAME +"."+ ALUNOS_COLUMN_NOME + ", " + EVENTOS_TABLE_NAME + "." + EVENTOS_COLUMN_NOME +
-                ", " + ALUNOS_EVENTOS_TABLE_NAME + "." + ALUNOS_EVENTOS_COLUMN_HORA_DE_ENTRADA +
                 " FROM "+ ALUNOS_TABLE_NAME +
                 " INNER JOIN "+ALUNOS_EVENTOS_TABLE_NAME+" ON "+ALUNOS_TABLE_NAME+"."+ALUNOS_COLUMN_ID+" = "+ALUNOS_EVENTOS_TABLE_NAME+"."+ALUNOS_EVENTOS_COLUMN_ALUNO_ID+
                 " INNER JOIN "+EVENTOS_TABLE_NAME+" ON "+EVENTOS_TABLE_NAME+"."+EVENTOS_COLUMN_ID+" = "+ALUNOS_EVENTOS_TABLE_NAME+"."+ALUNOS_EVENTOS_COLUMN_EVENTO_ID+
@@ -147,7 +135,6 @@ public class DbHelper extends SQLiteOpenHelper {
     // Retorna um cursor que armazena nome do aluno, rgm, nome do evento e horario de entrada nessa ordem passando uma String como idEvento
     public Cursor lerAlunosEmUmEvento(String idEvento) {
         String query = "SELECT "+ ALUNOS_TABLE_NAME +"."+ ALUNOS_COLUMN_RGM + ", " + ALUNOS_TABLE_NAME +"."+ ALUNOS_COLUMN_NOME + ", " + EVENTOS_TABLE_NAME + "." + EVENTOS_COLUMN_NOME +
-                ", " + ALUNOS_EVENTOS_TABLE_NAME + "." + ALUNOS_EVENTOS_COLUMN_HORA_DE_ENTRADA +
                 " FROM "+ ALUNOS_TABLE_NAME +
                 " INNER JOIN "+ALUNOS_EVENTOS_TABLE_NAME+" ON "+ALUNOS_TABLE_NAME+"."+ALUNOS_COLUMN_ID+" = "+ALUNOS_EVENTOS_TABLE_NAME+"."+ALUNOS_EVENTOS_COLUMN_ALUNO_ID+
                 " INNER JOIN "+EVENTOS_TABLE_NAME+" ON "+EVENTOS_TABLE_NAME+"."+EVENTOS_COLUMN_ID+" = "+ALUNOS_EVENTOS_TABLE_NAME+"."+ALUNOS_EVENTOS_COLUMN_EVENTO_ID+
@@ -222,12 +209,12 @@ public class DbHelper extends SQLiteOpenHelper {
 
         long result = 0;
 
-        if (dbWrite != null) {
-            cv.put(ALUNOS_EVENTOS_COLUMN_HORA_DE_ENTRADA, horaAtualStr);
-            result = dbWrite.update(ALUNOS_EVENTOS_TABLE_NAME, cv, ALUNOS_EVENTOS_COLUMN_ALUNO_ID + "=? and " +
-                    ALUNOS_EVENTOS_COLUMN_EVENTO_ID + "=? and " +
-                    ALUNOS_EVENTOS_COLUMN_HORA_DE_ENTRADA + " IS NULL", new String[]{alunoIdStr, eventoId});
-        }
+//        if (dbWrite != null) {
+//            cv.put(ALUNOS_EVENTOS_COLUMN_HORA_DE_ENTRADA, horaAtualStr);
+//            result = dbWrite.update(ALUNOS_EVENTOS_TABLE_NAME, cv, ALUNOS_EVENTOS_COLUMN_ALUNO_ID + "=? and " +
+//                    ALUNOS_EVENTOS_COLUMN_EVENTO_ID + "=? and " +
+//                    ALUNOS_EVENTOS_COLUMN_HORA_DE_ENTRADA + " IS NULL", new String[]{alunoIdStr, eventoId});
+//        }
 
         if (result == -1) {
             Toast.makeText(context, "Aluno não cadastrado", Toast.LENGTH_SHORT).show();
@@ -246,20 +233,20 @@ public class DbHelper extends SQLiteOpenHelper {
 
     public void resetarTestesAlunos() {
         limparTabelaAlunos();
-        mockarDadosAlunos();
+//        mockarDadosAlunos();
     }
 
-    private void mockarDadosAlunos() {
-        this.addAluno(
-                "12345678",
-                "Teste 001");
-        this.addAluno(
-                "12345677",
-                "Teste 002");
-        this.addAluno(
-                "12345676",
-                "Teste 003");
-    }
+//    private void mockarDadosAlunos() {
+//        this.addAluno(
+//                "12345678",
+//                "Teste 001");
+//        this.addAluno(
+//                "12345677",
+//                "Teste 002");
+//        this.addAluno(
+//                "12345676",
+//                "Teste 003");
+//    }
 
     // CODIGOS PARA O EVENTO
 

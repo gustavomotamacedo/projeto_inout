@@ -41,7 +41,7 @@ public class AddAlunoActivity extends AppCompatActivity {
         myDB = new DbHelper(this);
 
         addButton.setOnClickListener(v -> {
-            myDB.addAluno(rgm.getText().toString(), nome.getText().toString());
+//            myDB.addAluno(rgm.getText().toString(), nome.getText().toString());
             Intent in = new Intent(AddAlunoActivity.this, EventosActivity.class);
             startActivity(in);
         });

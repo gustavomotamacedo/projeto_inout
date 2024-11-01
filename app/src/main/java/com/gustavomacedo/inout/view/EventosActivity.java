@@ -36,7 +36,7 @@ import java.util.Date;
 public class EventosActivity extends AppCompatActivity {
 
     private RecyclerView alunosView;
-    private ArrayList<String> alunoId, alunoRgm, alunoNome, alunoEvento, alunoEntrada;
+    private ArrayList<String> alunoId, alunosNome, alunosRgm, alunoEvento, alunoEntrada;
     private ArrayList<AlunoBean> alunoBeanArrayList;
 
     private Button btnExportarCsv;
@@ -68,8 +68,8 @@ public class EventosActivity extends AppCompatActivity {
 
         // Arrays da tabela de alunos
         alunoId = new ArrayList<>();
-        alunoRgm = new ArrayList<>();
-        alunoNome = new ArrayList<>();
+        alunosNome = new ArrayList<>();
+        alunosRgm = new ArrayList<>();
         alunoEvento = new ArrayList<>();
         alunoEntrada = new ArrayList<>();
         // Array de beans de alunos
@@ -78,7 +78,7 @@ public class EventosActivity extends AppCompatActivity {
         adicionaDadosAosArrays();
         criarBeansDasTabelas();
 
-        AlunoAdapter alunoAdapter = new AlunoAdapter(this, alunoNome, alunoRgm, alunoEntrada);
+        AlunoAdapter alunoAdapter = new AlunoAdapter(this, alunosRgm, alunosNome, alunoEntrada);
 
         alunosView.setAdapter(alunoAdapter);
         alunosView.setLayoutManager(new LinearLayoutManager(this));
@@ -91,9 +91,9 @@ public class EventosActivity extends AppCompatActivity {
                         .withSeparator(',')
                         .build();
                 // feed in your array (or convert your data to an array)
-                String entrie = "";
+                String entrie = "nome,rgm\n";
                 for (AlunoBean a : alunoBeanArrayList) {
-                    entrie += a.toString() + ",";
+                    entrie += a.getRgm().toString() + "," + a.getNome().toString() + ",";
                 }
                 String[] entries = entrie.split(",");
                 writer.writeNext(entries);
@@ -108,22 +108,20 @@ public class EventosActivity extends AppCompatActivity {
         for (int i = 0; i < alunoId.size(); i++) {
             alunoBeanArrayList.add(new AlunoBean(
                     alunoId.get(i),
-                    alunoRgm.get(i),
-                    alunoNome.get(i)
+                    alunosNome.get(i),
+                    alunosRgm.get(i)
             ));
         }
     }
 
     public void adicionaDadosAosArrays() {
         Cursor alunosCursor = dbHelper.lerTodosOsAlunos();
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-        String data = sdf.format(new Date());
         if (alunosCursor != null) {
             while(alunosCursor.moveToNext()) {
                 alunoId.add(String.valueOf(alunosCursor.getString(0)));
-                alunoRgm.add(String.valueOf(alunosCursor.getString(1)));
-                alunoNome.add(String.valueOf(alunosCursor.getString(2)));
-                alunoEntrada.add(data);
+                alunosNome.add(String.valueOf(alunosCursor.getString(1)));
+                alunoEntrada.add(String.valueOf(alunosCursor.getString(2)));
+                alunosRgm.add(String.valueOf(alunosCursor.getString(3)));
             }
         } else {
             Toast.makeText(this, "Não há dados", Toast.LENGTH_SHORT).show();
@@ -153,8 +151,8 @@ public class EventosActivity extends AppCompatActivity {
     });
 
     private void showAlertDialog(String[] alunoStr) {
-        String nome = alunoStr[0];
-        String rgm = alunoStr[1];
+        String rgm = alunoStr[0];
+        String nome = alunoStr[1];
         String evento1 = alunoStr[2];
         String evento2 = alunoStr[3];
         AlertDialog.Builder builder = new AlertDialog.Builder(EventosActivity.this);
@@ -166,9 +164,11 @@ public class EventosActivity extends AppCompatActivity {
         builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+                String entrada = sdf.format(new Date());
                 recreate();
                 dialogInterface.dismiss();
-                dbHelper.addAluno(nome, rgm);
+                dbHelper.addAluno(nome, rgm, entrada);
             }
         });
         builder.setNegativeButton("Não", new DialogInterface.OnClickListener() {
