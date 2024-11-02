@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -46,7 +47,6 @@ public class EventosActivity extends AppCompatActivity {
     private static final String CSV_PATH_ALUNOS = "/sdcard/Documents/alunos_export.csv";
     private static final String CSV_PATH_EVENTOS = "/sdcard/Documents/eventos_export.csv";
 
-    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,7 +76,7 @@ public class EventosActivity extends AppCompatActivity {
         alunoBeanArrayList = new ArrayList<>();
 
         adicionaDadosAosArrays();
-        criarBeansDasTabelas();
+//        criarBeansDasTabelas();
 
         AlunoAdapter alunoAdapter = new AlunoAdapter(this, alunosRgm, alunosNome, alunoEntrada);
 
@@ -93,7 +93,7 @@ public class EventosActivity extends AppCompatActivity {
                 // feed in your array (or convert your data to an array)
                 writer.writeNext(new String[] {"nome", "rgm"}, true);
                 for (AlunoBean a : alunoBeanArrayList) {
-                    String[] entrie = new String[] {a.getRgm(), a.getNome()};
+                    String[] entrie = new String[] {a.getNome(), a.getRgm()};
                     writer.writeNext(entrie, true);
                 }
                 writer.close();
@@ -117,10 +117,16 @@ public class EventosActivity extends AppCompatActivity {
         Cursor alunosCursor = dbHelper.lerTodosOsAlunos();
         if (alunosCursor != null) {
             while(alunosCursor.moveToNext()) {
-                alunoId.add(String.valueOf(alunosCursor.getString(0)));
-                alunosNome.add(String.valueOf(alunosCursor.getString(1)));
-                alunoEntrada.add(String.valueOf(alunosCursor.getString(2)));
-                alunosRgm.add(String.valueOf(alunosCursor.getString(3)));
+                try {
+                    Log.d("alunoCursor", alunosCursor.getString(3));
+                    alunoId.add(String.valueOf(alunosCursor.getString(0)));
+                    alunosRgm.add(String.valueOf(alunosCursor.getString(1)));
+                    alunoEntrada.add(String.valueOf(alunosCursor.getString(2)));
+                    alunosNome.add(String.valueOf(alunosCursor.getString(3)));
+                } catch (IllegalStateException e) {
+                    Toast.makeText(this, "ERRO: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.d("alunoCursor", alunosCursor.getString(3));
+                }
             }
         } else {
             Toast.makeText(this, "Não há dados", Toast.LENGTH_SHORT).show();
@@ -141,9 +147,9 @@ public class EventosActivity extends AppCompatActivity {
         if (result.getContents() != null) {
             
             String rgm = result.getContents().split(",")[0];
-            String nome = result.getContents().split(",")[1].replace("%20", " ");
-            String evento1 = result.getContents().split(",")[2].replace("%20", " ");
-            String evento2 = result.getContents().split(",")[3].replace("%20", " ");
+            String nome = result.getContents().split(",")[1].strip();
+            String evento1 = result.getContents().split(",")[2].strip();
+            String evento2 = result.getContents().split(",")[3].strip();
 
             showAlertDialog(new String[] {rgm, nome, evento1, evento2});
         }
@@ -163,6 +169,7 @@ public class EventosActivity extends AppCompatActivity {
         builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                @SuppressLint("SimpleDateFormat")
                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
                 String entrada = sdf.format(new Date());
                 recreate();
