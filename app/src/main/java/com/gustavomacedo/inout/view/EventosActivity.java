@@ -91,12 +91,11 @@ public class EventosActivity extends AppCompatActivity {
                         .withSeparator(',')
                         .build();
                 // feed in your array (or convert your data to an array)
-                String entrie = "nome,rgm\n";
+                writer.writeNext(new String[] {"nome", "rgm"}, true);
                 for (AlunoBean a : alunoBeanArrayList) {
-                    entrie += a.getRgm().toString() + "," + a.getNome().toString() + ",";
+                    String[] entrie = new String[] {a.getRgm(), a.getNome()};
+                    writer.writeNext(entrie, true);
                 }
-                String[] entries = entrie.split(",");
-                writer.writeNext(entries);
                 writer.close();
             } catch (IOException e) {
                 throw new RuntimeException(e);
