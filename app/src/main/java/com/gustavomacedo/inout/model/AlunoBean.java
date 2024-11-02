@@ -1,8 +1,7 @@
 package com.gustavomacedo.inout.model;
 
-import androidx.annotation.NonNull;
-
 import com.opencsv.bean.CsvBindByName;
+import com.opencsv.bean.CsvDate;
 
 public class AlunoBean {
 
@@ -12,11 +11,15 @@ public class AlunoBean {
     private String rgm;
     @CsvBindByName(column = "nome")
     private String nome;
+    @CsvBindByName(column = "hora_de_entrada")
+    @CsvDate
+    private String entrada;
 
-    public AlunoBean(String id, String rgm, String nome) {
+    public AlunoBean(String id, String rgm, String nome, String entrada) {
         this.id = id;
         this.rgm = rgm;
         this.nome = nome;
+        this.entrada = entrada;
     }
 
     public String getId() {
@@ -31,13 +34,17 @@ public class AlunoBean {
         return nome;
     }
 
-    @NonNull
+    public String getEntrada() {
+        return entrada;
+    }
+
     @Override
     public String toString() {
         return "AlunoBean{" +
                 "id='" + id + '\'' +
-                ", nome='" + nome + '\'' +
                 ", rgm='" + rgm + '\'' +
+                ", nome='" + nome + '\'' +
+                ", entrada='" + entrada + '\'' +
                 '}';
     }
 }

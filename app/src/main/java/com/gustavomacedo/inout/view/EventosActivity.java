@@ -37,7 +37,7 @@ import java.util.Date;
 public class EventosActivity extends AppCompatActivity {
 
     private RecyclerView alunosView;
-    private ArrayList<String> alunoId, alunosNome, alunosRgm, alunoEvento, alunoEntrada;
+    private ArrayList<String> alunoId, alunosNome, alunosRgm, alunoEntrada;
     private ArrayList<AlunoBean> alunoBeanArrayList;
 
     private Button btnExportarCsv;
@@ -45,7 +45,6 @@ public class EventosActivity extends AppCompatActivity {
     private DbHelper dbHelper;
 
     private static final String CSV_PATH_ALUNOS = "/sdcard/Documents/alunos_export.csv";
-    private static final String CSV_PATH_EVENTOS = "/sdcard/Documents/eventos_export.csv";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,13 +69,12 @@ public class EventosActivity extends AppCompatActivity {
         alunoId = new ArrayList<>();
         alunosNome = new ArrayList<>();
         alunosRgm = new ArrayList<>();
-        alunoEvento = new ArrayList<>();
         alunoEntrada = new ArrayList<>();
         // Array de beans de alunos
         alunoBeanArrayList = new ArrayList<>();
 
         adicionaDadosAosArrays();
-//        criarBeansDasTabelas();
+        criarBeansDasTabelas();
 
         AlunoAdapter alunoAdapter = new AlunoAdapter(this, alunosRgm, alunosNome, alunoEntrada);
 
@@ -90,6 +88,7 @@ public class EventosActivity extends AppCompatActivity {
                 CSVWriter writer = (CSVWriter) new CSVWriterBuilder(new FileWriter(CSV_PATH_ALUNOS))
                         .withSeparator(',')
                         .build();
+                writer.flush();
                 // feed in your array (or convert your data to an array)
                 writer.writeNext(new String[] {"nome", "rgm"}, true);
                 for (AlunoBean a : alunoBeanArrayList) {
@@ -108,7 +107,8 @@ public class EventosActivity extends AppCompatActivity {
             alunoBeanArrayList.add(new AlunoBean(
                     alunoId.get(i),
                     alunosNome.get(i),
-                    alunosRgm.get(i)
+                    alunosRgm.get(i),
+                    alunoEntrada.get(i)
             ));
         }
     }
