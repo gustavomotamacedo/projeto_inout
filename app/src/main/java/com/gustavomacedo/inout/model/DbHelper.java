@@ -14,7 +14,7 @@ public class DbHelper extends SQLiteOpenHelper {
     private Context context;
 
     private static final String DATABASE_NAME = "InOut.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3; // Atualize para a nova versão
 
     // armazenando nomes das tabelas em constantes
     private static final String ALUNOS_TABLE_NAME = "alunos";
@@ -44,8 +44,17 @@ public class DbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + ALUNOS_TABLE_NAME);
-        onCreate(db);
+        if (oldVersion < 3) {
+            db.execSQL("DROP TABLE IF EXISTS " + ALUNOS_TABLE_NAME + ";");
+
+            String alunos_query = "CREATE TABLE "+ ALUNOS_TABLE_NAME +" (" +
+                    "    "+ ALUNOS_COLUMN_ID +" INTEGER PRIMARY KEY," +
+                    "    "+ ALUNOS_COLUMN_RGM +" INTEGER NOT NULL UNIQUE," +
+                    "    "+ ALUNOS_COLUMN_HORA_DE_ENTRADA +" DATETIME," +
+                    "    "+ ALUNOS_COLUMN_NOME +" VARCHAR(255) NOT NULL);";
+
+            db.execSQL(alunos_query);
+        }
     }
 
     // CODIGOS PARA O ALUNO
@@ -74,48 +83,6 @@ public class DbHelper extends SQLiteOpenHelper {
 
         if (db != null){
             cursor = db.rawQuery(query, null);
-        }
-
-        return cursor;
-    }
-
-    public Cursor lerAlunoPorRGM(int rgm) {
-        String query = "SELECT * FROM " + ALUNOS_TABLE_NAME + " WHERE " + ALUNOS_COLUMN_RGM + "=?";
-
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor cursor = null;
-
-        if (db != null) {
-            cursor = db.rawQuery(query, new String[] {String.valueOf(rgm)});
-        }
-
-        return cursor;
-    }
-
-    public Cursor lerAlunoPorRGM(String rgm) {
-        String query = "SELECT * FROM " + ALUNOS_TABLE_NAME + " WHERE " + ALUNOS_COLUMN_RGM + "=?";
-
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor cursor = null;
-
-        if (db != null) {
-            cursor = db.rawQuery(query, new String[] {rgm});
-        }
-
-        return cursor;
-    }
-
-    public Cursor lerIdAlunoPorRGM(String rgm) {
-        String query = "SELECT "+ALUNOS_COLUMN_ID+" FROM " + ALUNOS_TABLE_NAME + " WHERE " + ALUNOS_COLUMN_RGM + "=?";
-
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor cursor = null;
-
-        if (db != null) {
-            cursor = db.rawQuery(query, new String[] {rgm});
         }
 
         return cursor;

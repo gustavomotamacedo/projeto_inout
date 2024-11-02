@@ -57,13 +57,13 @@ public class EventosActivity extends AppCompatActivity {
             return insets;
         });
 
+        // instância do banco de dados
+        dbHelper = new DbHelper(this);
+
         // instanciando views
         alunosView = findViewById(R.id.alunosView);
         btnExportarCsv = findViewById(R.id.btnExportarCsv);
         btnScanner = findViewById(R.id.btnScanner);
-
-        // instância do banco de dados
-        dbHelper = new DbHelper(this);
 
         // Arrays da tabela de alunos
         alunoId = new ArrayList<>();
